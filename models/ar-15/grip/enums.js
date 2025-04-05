@@ -38,7 +38,7 @@ const GRIP_MATERIALS = ["Polymer", "Rubber", "Aluminum", "Wood", "G10", "OverMol
 const GRIP_FINISHES = ["Textured", "Smooth", "Matte", "Glossy", "Stippled", "Anodized", "Cerakote"];
 
 // Enum for grip color
-const GRIP_COLORS = ["Black", "FDE", "Scorched Dark Earth", "OD Green", "Gray", "Tan", "Burnt Bronze", "Sniper Gray", "Tungsten", "Olive Drab", "Desert Tan", "Coyote Brown", "Stealth Gray"];
+const GRIP_COLORS = ["Black", "FDE", "Scorched Dark Earth", "OD Green", "Gray", "Tan", "Burnt Bronze", "Sniper Gray", "Tungsten", "Olive Drab", "Desert Tan", "Coyote Brown", "Stealth Gray", "Wolf Grey", "Foliage Green", "Multi-Cam/Black"];
 
 // Enum for grip screw type
 const GRIP_SCREW_TYPES = ["Hex Head", "Slotted", "Phillips", "Torx"];
