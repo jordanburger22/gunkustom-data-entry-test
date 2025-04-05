@@ -1,7 +1,7 @@
 // grip-enums.js
 
 // Enum for grip texture
-const TEXTURES = ["Smooth", "Textured", "Rubberized", "Cobblestone", "Stippled", "Checkered"];
+const TEXTURES = ["Smooth", "Textured", "Rubberized", "Cobblestone", "Stippled", "Checkered", "Non-Slip Textured Surface"];
 
 // Enum for hand orientation
 const HAND_ORIENTATIONS = ["Right-Handed", "Left-Handed", "Ambidextrous"];
