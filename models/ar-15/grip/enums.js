@@ -1,7 +1,7 @@
 // grip-enums.js
 
 // Enum for grip texture
-const TEXTURES = ["Smooth", "Textured", "Rubberized"];
+const TEXTURES = ["Smooth", "Textured", "Rubberized", "Cobblestone", "Stippled", "Checkered"];
 
 // Enum for hand orientation
 const HAND_ORIENTATIONS = ["Right-Handed", "Left-Handed", "Ambidextrous"];
@@ -10,7 +10,7 @@ const HAND_ORIENTATIONS = ["Right-Handed", "Left-Handed", "Ambidextrous"];
 const GRIP_SUBCATEGORIES = ["Pistol Grip", "Vertical Foregrip", "Angled Foregrip"];
 
 // Enum for grip shape
-const GRIP_SHAPES = ["Ergonomic", "Straight", "Contoured", "Beavertail"];
+const GRIP_SHAPES = ["Ergonomic", "Straight", "Contoured", "Beavertail", "Pistol", "Vertical"];
 
 // Enum for grip features (can be used as an array)
 const GRIP_FEATURES = [
@@ -19,21 +19,26 @@ const GRIP_FEATURES = [
   "Thumb Rest",
   "Beavertail Extension",
   "Non-Slip Surface",
-  "Grooved Back Straps", // Added for EPG27 grip
-  "Receiver Gap Filler"  // Added for EPG27 grip
+  "Grooved Back Straps",
+  "Receiver Gap Filler",
+  "Storage Compartment",
+  "Battery Cradle",
+  "Anti-Slip Design",
+  "Recoil Absorbing",
+  "Heat Resistant"
 ];
 
 // Enum for grip material type
-const GRIP_MATERIALS = ["Polymer", "Rubber", "Aluminum", "Wood", "G10"];
+const GRIP_MATERIALS = ["Polymer", "Rubber", "Aluminum", "Wood", "G10", "OverMolded Rubber", "Thermoplastic Elastomer"];
 
 // Enum for grip finish type
-const GRIP_FINISHES = ["Textured", "Smooth", "Matte", "Glossy", "Stippled"];
+const GRIP_FINISHES = ["Textured", "Smooth", "Matte", "Glossy", "Stippled", "Anodized", "Cerakote"];
 
 // Enum for grip color
-const GRIP_COLORS = ["Black", "FDE", 'Scorched Dark Earth', "OD Green", "Gray", "Tan", "Burnt Bronze", "Sniper Gray", "Tungsten", "Olive Drab", "Desert Tan"];
+const GRIP_COLORS = ["Black", "FDE", "Scorched Dark Earth", "OD Green", "Gray", "Tan", "Burnt Bronze", "Sniper Gray", "Tungsten", "Olive Drab", "Desert Tan", "Coyote Brown", "Stealth Gray"];
 
 // Enum for grip screw type
-const GRIP_SCREW_TYPES = ["Hex Head", "Slotted", "Phillips"];
+const GRIP_SCREW_TYPES = ["Hex Head", "Slotted", "Phillips", "Torx"];
 
 // Enum for trigger guard type
 const TRIGGER_GUARD_TYPES = ["Standard", "Enhanced", "Integrated", "Oversized", "Custom"];
