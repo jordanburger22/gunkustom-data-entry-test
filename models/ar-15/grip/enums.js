@@ -25,7 +25,10 @@ const GRIP_FEATURES = [
   "Battery Cradle",
   "Anti-Slip Design",
   "Recoil Absorbing",
-  "Heat Resistant"
+  "Heat Resistant",
+  "Extended Tang",
+  "Aggressive Texture",
+  "Accepts Battery Grip Plug"
 ];
 
 // Enum for grip material type
