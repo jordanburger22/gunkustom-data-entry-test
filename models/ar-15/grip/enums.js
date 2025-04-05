@@ -1,7 +1,7 @@
 // grip-enums.js
 
 // Enum for grip texture
-const TEXTURES = ["Smooth", "Textured", "Rubberized", "Cobblestone", "Stippled", "Checkered", "Non-Slip Textured Surface"];
+const TEXTURES = ["Smooth", "Textured", "Rubberized", "Cobblestone", "Stippled", "Checkered", "Non-Slip Textured Surface", "Aggressive Textured Surface"];
 
 // Enum for hand orientation
 const HAND_ORIENTATIONS = ["Right-Handed", "Left-Handed", "Ambidextrous"];
@@ -10,7 +10,7 @@ const HAND_ORIENTATIONS = ["Right-Handed", "Left-Handed", "Ambidextrous"];
 const GRIP_SUBCATEGORIES = ["Pistol Grip", "Vertical Foregrip", "Angled Foregrip"];
 
 // Enum for grip shape
-const GRIP_SHAPES = ["Ergonomic", "Straight", "Contoured", "Beavertail", "Pistol", "Vertical"];
+const GRIP_SHAPES = ["Ergonomic", "Straight", "Contoured", "Beavertail", "Pistol", "Vertical", "Ergonomic with extended tang"];
 
 // Enum for grip features (can be used as an array)
 const GRIP_FEATURES = [
@@ -29,7 +29,7 @@ const GRIP_FEATURES = [
 ];
 
 // Enum for grip material type
-const GRIP_MATERIALS = ["Polymer", "Rubber", "Aluminum", "Wood", "G10", "OverMolded Rubber", "Thermoplastic Elastomer"];
+const GRIP_MATERIALS = ["Polymer", "Rubber", "Aluminum", "Wood", "G10", "OverMolded Rubber", "Thermoplastic Elastomer", "Reinforced Polymer"];
 
 // Enum for grip finish type
 const GRIP_FINISHES = ["Textured", "Smooth", "Matte", "Glossy", "Stippled", "Anodized", "Cerakote"];
