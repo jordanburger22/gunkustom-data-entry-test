@@ -81,7 +81,6 @@ const HANDGUARD_FEATURES = [
   'Textured Grip Surface'
 ];
 
-// Enum for barrel nut types
 const BARREL_NUT_TYPES = [
   'Standard Mil-Spec',
   'Proprietary',
@@ -90,7 +89,8 @@ const BARREL_NUT_TYPES = [
   'YHM Diamond',
   'BCM KMR',
   'Geissele BAR',
-  'Midwest Industries'
+  'Midwest Industries',
+  'ATLAS System'
 ];
 
 // Enum for mounting system types

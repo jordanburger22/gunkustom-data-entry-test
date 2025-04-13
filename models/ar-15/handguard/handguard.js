@@ -10,30 +10,31 @@ const {
   BARREL_NUT_TYPES,
   MOUNTING_SYSTEMS,
   RAIL_COMPATIBILITIES,
-  GAS_SYSTEM_TYPES
+  GAS_SYSTEM_TYPES,
+  INSTALLATION_TYPES // Added
 } = require('./enums');
 const { vendorSchema } = require('../../vendor/vendor-schema');
 
 // Compatibility schema for AR-15 handguards
 const ar15HandguardCompatibilitySchema = new mongoose.Schema({
   requiredUpperReceiver: [{
-    type: { type: String, required: true }, // e.g., "Mil-Spec"
+    type: { type: String, required: true },
     specifications: {
-      fitmentType: { type: String, required: true }, // e.g., "Mil-Spec"
+      fitmentType: { type: String, required: true },
       id: { type: String }
     }
   }],
   incompatibleUpperReceiver: [{
-    type: { type: String }, // e.g., "Proprietary"
+    type: { type: String },
     specifications: {
-      fitmentType: { type: String }, // e.g., "Aero M5"
+      fitmentType: { type: String },
       id: { type: String }
     }
   }],
   requiredBarrelNut: {
-    type: { type: String, enum: BARREL_NUT_TYPES, required: true }, // e.g., "Standard Mil-Spec"
-    thread: { type: String, required: true }, // e.g., "1-7/16-16"
-    diameter: { type: String, required: true } // e.g., "1.25 in"
+    type: { type: String, required: true },
+    thread: { type: String }, // Changed: Made optional
+    diameter: { type: String } // Changed: Made optional
   },
   incompatibleBarrelNut: {
     type: { type: String, enum: BARREL_NUT_TYPES },
@@ -45,31 +46,31 @@ const ar15HandguardCompatibilitySchema = new mongoose.Schema({
   requiredGasSystem: {
     type: { type: String, enum: GAS_SYSTEM_TYPES },
     specifications: {
-      length: { type: String }, // e.g., "9 in"
+      length: { type: String },
       id: { type: String }
     }
   },
   incompatibleGasSystem: {
     type: { type: String, enum: GAS_SYSTEM_TYPES },
     specifications: {
-      length: { type: String }, // e.g., "12 in"
+      length: { type: String },
       id: { type: String }
     }
   },
   mountingSystem: {
-    type: { type: String, enum: MOUNTING_SYSTEMS, required: true }, // e.g., "M-LOK"
-    slots: { type: Number } // e.g., 8
+    type: { type: String, enum: MOUNTING_SYSTEMS, required: true },
+    slots: { type: Number }
   },
   railCompatibility: {
-    type: { type: String, enum: RAIL_COMPATIBILITIES }, // e.g., "None"
-    continuous: { type: Boolean } // e.g., false
+    type: { type: String, enum: RAIL_COMPATIBILITIES },
+    continuous: { type: Boolean }
   },
   barrelDiameterCompatibility: {
-    min: { type: String }, // e.g., "0.625 in"
-    max: { type: String } // e.g., "1.0 in"
+    min: { type: String },
+    max: { type: String }
   },
   handOrientation: { type: String, enum: HANDGUARD_HAND_ORIENTATIONS, default: 'Ambidextrous' },
-  installationType: { type: String, enum: ['Drop-In', 'Gunsmithing'], required: true },
+  installationType: { type: String, enum: INSTALLATION_TYPES, required: true },
   platformCompatibility: { type: String },
   ergonomicRequirements: { type: String },
   notes: { type: String },
@@ -80,64 +81,63 @@ const ar15HandguardCompatibilitySchema = new mongoose.Schema({
   statusReason: { type: String },
   compatibilityWarnings: [{ type: String }],
   suggestedComponents: [{
-    category: { type: String }, // e.g., "Gas Block"
-    type: { type: String }, // e.g., "Low Profile"
+    category: { type: String },
+    type: { type: String },
     specifications: { type: Object },
     id: { type: String }
   }],
   requiredGasBlock: {
-    type: { type: String }, // e.g., "Low Profile"
+    type: { type: String },
     specifications: {
-      height: { type: String }, // e.g., "1.0 in"
-      width: { type: String }, // e.g., "0.75 in"
+      height: { type: String },
+      width: { type: String },
       id: { type: String }
     }
   },
   incompatibleGasBlock: {
-    type: { type: String }, // e.g., "A2 Front Sight"
+    type: { type: String },
     specifications: {
       height: { type: String },
       id: { type: String }
     }
   },
   barrelProfileCompatibility: {
-    compatibleProfiles: [{ type: String }], // e.g., ["Government", "M4"]
-    incompatibleProfiles: [{ type: String }], // e.g., ["Bull"]
-    maxDiameterAtChamber: { type: String } // e.g., "1.2 in"
+    compatibleProfiles: [{ type: String }],
+    incompatibleProfiles: [{ type: String }],
+    maxDiameterAtChamber: { type: String }
   },
   frontSightCompatibility: {
-    type: { type: String }, // e.g., "Fixed"
-    requiresRemoval: { type: Boolean }, // e.g., false
+    type: { type: String },
+    requiresRemoval: { type: Boolean },
     specifications: {
-      height: { type: String }, // e.g., "1.5 in"
+      height: { type: String },
       id: { type: String }
     }
   },
   deltaRingCompatibility: {
-    type: { type: String }, // e.g., "Standard"
-    requiresDeltaRing: { type: Boolean }, // e.g., true
-    requiresRemoval: { type: Boolean } // e.g., false
+    type: { type: String },
+    requiresDeltaRing: { type: Boolean },
+    requiresRemoval: { type: Boolean }
   },
   muzzleDeviceCompatibility: {
-    type: { type: String }, // e.g., "A2 Flash Hider"
-    clearanceDiameter: { type: String }, // e.g., "1.0 in"
-    lengthRelation: { type: String }, // e.g., "Flush"
+    type: { type: String },
+    clearanceDiameter: { type: String },
+    lengthRelation: { type: String },
     id: { type: String }
   },
-  // Newly added fields
   suppressorCompatibility: {
-    maxDiameter: { type: String }, // e.g., "1.5 in"
-    notes: { type: String } // e.g., "Clears most standard suppressors"
+    maxDiameter: { type: String },
+    notes: { type: String }
   },
-  mountingHardwareThreadPitch: { type: String }, // e.g., "10-32"
-  railHeight: { type: String }, // e.g., "Standard Picatinny height"
+  mountingHardwareThreadPitch: { type: String },
+  railHeight: { type: String },
   heatShielding: {
-    hasHeatShield: { type: Boolean }, // e.g., true
-    type: { type: String } // e.g., "Integrated aluminum shield"
+    hasHeatShield: { type: Boolean },
+    type: { type: String }
   }
 });
 
-// Main AR-15 Handguard schema (unchanged)
+// Main AR-15 Handguard schema
 const ar15HandguardSchema = new mongoose.Schema({
   groupId: { type: mongoose.Schema.Types.ObjectId, ref: 'AR15HandguardGroup', required: true },
   attributes: {
