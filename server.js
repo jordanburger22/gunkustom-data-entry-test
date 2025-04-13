@@ -6,6 +6,7 @@ require('dotenv').config();
 const cors = require('cors');
 const morgan = require('morgan');
 const ar15GripRouter = require('./routes/ar15/ar-15-grip-router');
+const ar15TriggerGuardRouter = require('./routes/ar15/trigger-guard-router');
 
 
 app.use(cors());
@@ -26,6 +27,7 @@ const connectDB = async () => {
 connectDB();
 
 app.use('/ar15/grips', ar15GripRouter)
+app.use('/ar15/trigger-guards', ar15TriggerGuardRouter)
 
 
 app.use((err, req, res, next) => {
