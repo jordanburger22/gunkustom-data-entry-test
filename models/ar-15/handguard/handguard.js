@@ -10,7 +10,7 @@ const {
   BARREL_NUT_TYPES,
   MOUNTING_SYSTEMS,
   RAIL_COMPATIBILITIES,
-  GAS_SYSTEM_TYPES // ADDED: For `requiredGasSystem` and `incompatibleGasSystem`
+  GAS_SYSTEM_TYPES
 } = require('./enums');
 const { vendorSchema } = require('../../vendor/vendor-schema');
 
@@ -42,14 +42,14 @@ const ar15HandguardCompatibilitySchema = new mongoose.Schema({
       id: { type: String }
     }
   },
-  requiredGasSystem: { // ADDED: Included from JSON schema to specify gas system compatibility
+  requiredGasSystem: {
     type: { type: String, enum: GAS_SYSTEM_TYPES },
     specifications: {
       length: { type: String }, // e.g., "9 in"
       id: { type: String }
     }
   },
-  incompatibleGasSystem: { // ADDED: Included from JSON schema for incompatible gas systems
+  incompatibleGasSystem: {
     type: { type: String, enum: GAS_SYSTEM_TYPES },
     specifications: {
       length: { type: String }, // e.g., "12 in"
@@ -68,10 +68,10 @@ const ar15HandguardCompatibilitySchema = new mongoose.Schema({
     min: { type: String }, // e.g., "0.625 in"
     max: { type: String } // e.g., "1.0 in"
   },
-  handOrientation: { type: String, enum: HANDGUARD_HAND_ORIENTATIONS, default: 'Ambidextrous' }, // CHANGED: Added default "Ambidextrous" to reflect typical handguard design
-  installationType: { type: String, enum: ['Drop-In', 'Gunsmithing'], required: true }, // Matches previous update, retained for handguard specificity
-  platformCompatibility: { type: String }, // Matches previous update, aligns with group schema
-  ergonomicRequirements: { type: String }, // Matches previous update, aligns with grip/trigger guard
+  handOrientation: { type: String, enum: HANDGUARD_HAND_ORIENTATIONS, default: 'Ambidextrous' },
+  installationType: { type: String, enum: ['Drop-In', 'Gunsmithing'], required: true },
+  platformCompatibility: { type: String },
+  ergonomicRequirements: { type: String },
   notes: { type: String },
   fitmentExplanation: { type: String },
   version: { type: String, required: true },
@@ -123,45 +123,62 @@ const ar15HandguardCompatibilitySchema = new mongoose.Schema({
     clearanceDiameter: { type: String }, // e.g., "1.0 in"
     lengthRelation: { type: String }, // e.g., "Flush"
     id: { type: String }
+  },
+  // Newly added fields
+  suppressorCompatibility: {
+    maxDiameter: { type: String }, // e.g., "1.5 in"
+    notes: { type: String } // e.g., "Clears most standard suppressors"
+  },
+  mountingHardwareThreadPitch: { type: String }, // e.g., "10-32"
+  railHeight: { type: String }, // e.g., "Standard Picatinny height"
+  heatShielding: {
+    hasHeatShield: { type: Boolean }, // e.g., true
+    type: { type: String } // e.g., "Integrated aluminum shield"
   }
 });
 
-// Main AR-15 Handguard schema
+// Main AR-15 Handguard schema (unchanged)
 const ar15HandguardSchema = new mongoose.Schema({
   groupId: { type: mongoose.Schema.Types.ObjectId, ref: 'AR15HandguardGroup', required: true },
   attributes: {
-    color: { type: String, enum: HANDGUARD_COLORS }, // Matches previous update, retained for variant differentiation
-    materialType: { type: String, enum: HANDGUARD_MATERIALS }, // Matches JSON and enums.js
-    finishType: { type: String, enum: HANDGUARD_FINISHES }, // Matches JSON and enums.js
-    profile: { type: String, enum: HANDGUARD_PROFILES }, // Matches JSON and enums.js
-    subCategory: { type: String, enum: HANDGUARD_SUBCATEGORIES }, // Matches previous update, aligns with grip/trigger guard
-    features: [{ type: String, enum: HANDGUARD_FEATURES }], // Matches JSON and enums.js, extended by junior dev
-    innerDiameter: { type: String }, // Matches JSON
-    outerDiameter: { type: String }, // Matches JSON
-    hasCutouts: { type: Boolean }, // Matches JSON
-    ventedDesign: { type: Boolean } // Matches JSON
+    color: { type: String, enum: HANDGUARD_COLORS },
+    materialType: { type: String, enum: HANDGUARD_MATERIALS },
+    finishType: { type: String, enum: HANDGUARD_FINISHES },
+    weight: { type: String },
+    length: { type: String },
+    profile: { type: String, enum: HANDGUARD_PROFILES },
+    subCategory: { type: String, enum: HANDGUARD_SUBCATEGORIES },
+    features: [{ type: String, enum: HANDGUARD_FEATURES }],
+    innerDiameter: { type: String },
+    outerDiameter: { type: String },
+    hasCutouts: { type: Boolean },
+    ventedDesign: { type: Boolean }
   },
-  upc: { type: String, required: true, unique: true }, // Matches JSON
-  images: [{ type: String }], // Matches JSON
-  vendors: [vendorSchema], // Matches previous update, aligns with JSON's implied vendor structure
+  upc: { type: String, required: true, unique: true },
+  images: [{ type: String }],
+  vendors: [vendorSchema],
   compatibility: ar15HandguardCompatibilitySchema,
-  customerRating: { type: Number, default: 0, min: 0 } // Matches JSON, retained `min: 0` from previous update
+  customerRating: { type: Number, default: 0, min: 0 }
 });
 
 // Add text index for full-text search
 ar15HandguardSchema.index({
   'attributes.materialType': 'text',
+  'attributes.finishType': 'text',
+  'attributes.weight': 'text',
+  'attributes.length': 'text',
   'attributes.profile': 'text',
   'attributes.features': 'text',
-  'attributes.subCategory': 'text',
-  'attributes.finishType': 'text'
+  'attributes.subCategory': 'text'
 }, {
   weights: {
     'attributes.materialType': 5,
+    'attributes.finishType': 4,
+    'attributes.weight': 3,
+    'attributes.length': 3,
     'attributes.profile': 5,
     'attributes.features': 3,
-    'attributes.subCategory': 3,
-    'attributes.finishType': 2
+    'attributes.subCategory': 3
   },
   name: 'TextIndex'
 });
