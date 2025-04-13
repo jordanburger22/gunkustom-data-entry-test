@@ -13,8 +13,8 @@ const {
   BARREL_NUT_TYPES,
   MOUNTING_SYSTEMS,
   RAIL_COMPATIBILITIES,
-  GAS_SYSTEM_TYPES // ADDED: To support compatibility validation
-} = require('../../models/ar-15/handguard/enums'); // CHANGED: Adjusted path to match model structure
+  GAS_SYSTEM_TYPES
+} = require('../../models/ar-15/handguard/enums');
 
 // POST /groups - Add a new handguard group
 ar15HandguardRouter.post('/groups', async (req, res) => {
@@ -24,11 +24,6 @@ ar15HandguardRouter.post('/groups', async (req, res) => {
     // Validate required fields for the handguard group
     if (!handguardGroupData.name) {
       return res.status(400).json({ message: 'Handguard group name is required' });
-    }
-    // ADDED: Validate required specifications fields
-    if (!handguardGroupData.components?.specifications?.materialType ||
-      !handguardGroupData.components?.specifications?.finishType) {
-      return res.status(400).json({ message: 'Material type and finish type are required in specifications' });
     }
 
     // Create the handguard group
@@ -42,21 +37,20 @@ ar15HandguardRouter.post('/groups', async (req, res) => {
     });
 
     try {
-      await handguardGroup.save(); // CHANGED: Fixed from `gripGroup` to `handguardGroup`
+      await handguardGroup.save();
     } catch (error) {
       if (error.code === 11000 && error.keyPattern.name) {
         return res.status(400).json({
-          message: `A handguard group with the name "${handguardGroupData.name}" already exists. Please use a different name or add a variant to the existing group.`, // CHANGED: Fixed message to reference "handguard group"
-          existingGroupId: (await AR15HandguardGroup.findOne({ name: handguardGroupData.name }))._id // CHANGED: Fixed to `AR15HandguardGroup`
+          message: `A handguard group with the name "${handguardGroupData.name}" already exists. Please use a different name or add a variant to the existing group.`,
+          existingGroupId: (await AR15HandguardGroup.findOne({ name: handguardGroupData.name }))._id
         });
       }
       throw error;
     }
 
-    // Return success response with the new handguard group's ID
-    res.status(201).json({ message: 'AR-15 handguard group added successfully', groupId: handguardGroup._id }); // CHANGED: Fixed message to "handguard group"
+    res.status(201).json({ message: 'AR-15 handguard group added successfully', groupId: handguardGroup._id });
   } catch (error) {
-    console.error('Error adding AR-15 handguard group:', error.message); // CHANGED: Fixed error message
+    console.error('Error adding AR-15 handguard group:', error.message);
     res.status(500).json({ message: 'Failed to add AR-15 handguard group', error: error.message });
   }
 });
@@ -70,7 +64,7 @@ ar15HandguardRouter.post('/groups/:groupId', async (req, res) => {
     // Validate required fields
     if (!handguardData.attributes || Object.keys(handguardData.attributes).length === 0) {
       return res.status(400).json({
-        message: 'At least one variant-specific attribute is required. Examples include: color, materialType, finishType, profile, subCategory, features, innerDiameter, outerDiameter, hasCutouts, ventedDesign.'
+        message: 'At least one variant-specific attribute is required. Examples include: color, profile, subCategory, features, innerDiameter, outerDiameter, hasCutouts, ventedDesign.'
       });
     }
     if (!handguardData.upc) {
@@ -103,8 +97,7 @@ ar15HandguardRouter.post('/groups/:groupId', async (req, res) => {
       throw error;
     }
 
-    // Return success response with the new handguard's ID
-    res.status(201).json({ message: 'AR-15 handguard variant added successfully', handguardId: newHandguard._id });
+    res.status(201).json({ message: 'AR-15 handguard variant added successfully', handplasguardId: newHandguard._id });
   } catch (error) {
     console.error('Error adding AR-15 handguard variant:', error.message);
     res.status(500).json({ message: 'Failed to add AR-15 handguard variant', error: error.message });
@@ -114,10 +107,7 @@ ar15HandguardRouter.post('/groups/:groupId', async (req, res) => {
 // GET /groups - Fetch all handguard groups
 ar15HandguardRouter.get('/groups', async (req, res) => {
   try {
-    // Fetch all handguard groups
     const handguardGroups = await AR15HandguardGroup.find().lean();
-
-    // Format the response
     const response = handguardGroups.map(group => ({
       groupId: group._id,
       name: group.name,
@@ -125,7 +115,6 @@ ar15HandguardRouter.get('/groups', async (req, res) => {
       components: group.components,
       popularityScore: group.popularityScore
     }));
-
     res.status(200).json(response);
   } catch (error) {
     console.error('Error fetching handguard groups:', error.message);
@@ -137,14 +126,10 @@ ar15HandguardRouter.get('/groups', async (req, res) => {
 ar15HandguardRouter.get('/groups/:groupId', async (req, res) => {
   try {
     const { groupId } = req.params;
-
-    // Fetch the handguard group
     const handguardGroup = await AR15HandguardGroup.findById(groupId).lean();
     if (!handguardGroup) {
       return res.status(404).json({ message: `Handguard group with _id "${groupId}" not found` });
     }
-
-    // Format the response
     const response = {
       groupId: handguardGroup._id,
       name: handguardGroup.name,
@@ -152,7 +137,6 @@ ar15HandguardRouter.get('/groups/:groupId', async (req, res) => {
       components: handguardGroup.components,
       popularityScore: handguardGroup.popularityScore
     };
-
     res.status(200).json(response);
   } catch (error) {
     console.error('Error fetching handguard group:', error.message);
@@ -164,17 +148,11 @@ ar15HandguardRouter.get('/groups/:groupId', async (req, res) => {
 ar15HandguardRouter.get('/groups/:groupId/variants', async (req, res) => {
   try {
     const { groupId } = req.params;
-
-    // Verify that the groupId exists
     const handguardGroup = await AR15HandguardGroup.findById(groupId);
     if (!handguardGroup) {
       return res.status(404).json({ message: `Handguard group with _id "${groupId}" not found` });
     }
-
-    // Fetch all variants for the handguard group
     const variants = await AR15Handguard.find({ groupId }).lean();
-
-    // Format the response
     const response = variants.map(variant => ({
       variantId: variant._id,
       attributes: variant.attributes,
@@ -184,7 +162,6 @@ ar15HandguardRouter.get('/groups/:groupId/variants', async (req, res) => {
       compatibility: variant.compatibility,
       customerRating: variant.customerRating || 0
     }));
-
     res.status(200).json(response);
   } catch (error) {
     console.error('Error fetching handguard variants:', error.message);
@@ -225,10 +202,6 @@ ar15HandguardRouter.put('/groups/:groupId', async (req, res) => {
     if (!handguardGroupData.name) {
       return res.status(400).json({ message: 'Handguard group name is required' });
     }
-    if (!handguardGroupData.components?.specifications?.materialType ||
-      !handguardGroupData.components?.specifications?.finishType) {
-      return res.status(400).json({ message: 'Material type and finish type are required in specifications' });
-    }
 
     // Find the existing handguard group
     const handguardGroup = await AR15HandguardGroup.findById(groupId);
@@ -254,7 +227,6 @@ ar15HandguardRouter.put('/groups/:groupId', async (req, res) => {
       throw error;
     }
 
-    // Return success response
     res.status(200).json({ message: 'AR-15 handguard group updated successfully', groupId: handguardGroup._id });
   } catch (error) {
     console.error('Error updating AR-15 handguard group:', error.message);
@@ -271,7 +243,7 @@ ar15HandguardRouter.put('/variants/:variantId', async (req, res) => {
     // Validate required fields
     if (!handguardData.attributes || Object.keys(handguardData.attributes).length === 0) {
       return res.status(400).json({
-        message: 'At least one variant-specific attribute is required. Examples include: color, materialType, finishType, profile, subCategory, features, innerDiameter, outerDiameter, hasCutouts, ventedDesign.'
+        message: 'At least one variant-specific attribute is required. Examples include: color, profile, subCategory, features, innerDiameter, outerDiameter, hasCutouts, ventedDesign.'
       });
     }
     if (!handguardData.upc) {
@@ -301,7 +273,6 @@ ar15HandguardRouter.put('/variants/:variantId', async (req, res) => {
       throw error;
     }
 
-    // Return success response
     res.status(200).json({ message: 'AR-15 handguard variant updated successfully', variantId: handguardVariant._id });
   } catch (error) {
     console.error('Error updating AR-15 handguard variant:', error.message);
