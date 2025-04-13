@@ -7,6 +7,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const ar15GripRouter = require('./routes/ar15/ar-15-grip-router');
 const ar15TriggerGuardRouter = require('./routes/ar15/trigger-guard-router');
+const ar15HandguardRouter = require('./routes/ar15/ar-15-handguard-router');
 
 
 app.use(cors());
@@ -28,6 +29,7 @@ connectDB();
 
 app.use('/ar15/grips', ar15GripRouter)
 app.use('/ar15/trigger-guards', ar15TriggerGuardRouter)
+app.use('/ar15/handguards', ar15HandguardRouter)
 
 
 app.use((err, req, res, next) => {
