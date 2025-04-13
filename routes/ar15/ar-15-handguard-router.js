@@ -22,12 +22,10 @@ ar15HandguardRouter.post('/groups', async (req, res) => {
   try {
     const handguardGroupData = req.body;
 
-    // Validate required fields for the handguard group
     if (!handguardGroupData.name) {
       return res.status(400).json({ message: 'Handguard group name is required' });
     }
 
-    // Create the handguard group
     const handguardGroup = new AR15HandguardGroup({
       name: handguardGroupData.name,
       description: handguardGroupData.description,
@@ -56,7 +54,7 @@ ar15HandguardRouter.post('/groups', async (req, res) => {
   }
 });
 
-// POST /groups/:groupId - Add a new handguard variant to an existing handguard group
+// POST /groups/:groupId - Add a new handguard variant
 ar15HandguardRouter.post('/groups/:groupId', async (req, res) => {
   try {
     const { groupId } = req.params;
@@ -65,7 +63,7 @@ ar15HandguardRouter.post('/groups/:groupId', async (req, res) => {
     // Validate required fields
     if (!handguardData.attributes || Object.keys(handguardData.attributes).length === 0) {
       return res.status(400).json({
-        message: 'At least one variant-specific attribute is required. Examples include: color, profile, subCategory, features, innerDiameter, outerDiameter, hasCutouts, ventedDesign.'
+        message: 'At least one variant-specific attribute is required (e.g., color, profile, subCategory, features).'
       });
     }
     if (!handguardData.upc) {
@@ -74,7 +72,7 @@ ar15HandguardRouter.post('/groups/:groupId', async (req, res) => {
     if (!handguardData.compatibility?.requiredUpperReceiver?.some(r => r.type && r.fitmentType)) {
       return res.status(400).json({ message: 'At least one requiredUpperReceiver with type and fitmentType is mandatory' });
     }
-    if (!handguardData.compatibility?.requiredBarrelNut?.type) { // Changed: Only require type
+    if (!handguardData.compatibility?.requiredBarrelNut?.type) {
       return res.status(400).json({ message: 'Required Barrel Nut type is mandatory' });
     }
     if (!handguardData.compatibility?.mountingSystem?.type) {
@@ -90,13 +88,11 @@ ar15HandguardRouter.post('/groups/:groupId', async (req, res) => {
       return res.status(400).json({ message: 'Last Updated is required' });
     }
 
-    // Verify that the groupId exists
     const handguardGroup = await AR15HandguardGroup.findById(groupId);
     if (!handguardGroup) {
-      return res.status(400).json({ message: `Handguard group with _id "${groupId}" not found` });
+      return res.status(404).json({ message: `Handguard group with _id "${groupId}" not found` });
     }
 
-    // Create the handguard variant
     const newHandguard = new AR15Handguard({
       groupId: groupId,
       attributes: handguardData.attributes,
@@ -153,7 +149,7 @@ ar15HandguardRouter.get('/groups/:groupId', async (req, res) => {
       groupId: handguardGroup._id,
       name: handguardGroup.name,
       description: handguardGroup.description,
-      components: handguardGroup.components,
+      components: group.components,
       popularityScore: handguardGroup.popularityScore
     };
     res.status(200).json(response);
@@ -163,7 +159,7 @@ ar15HandguardRouter.get('/groups/:groupId', async (req, res) => {
   }
 });
 
-// GET /groups/:groupId/variants - Fetch all variants for a specific handguard group
+// GET /groups/:groupId/variants - Fetch all variants for a group
 ar15HandguardRouter.get('/groups/:groupId/variants', async (req, res) => {
   try {
     const { groupId } = req.params;
@@ -212,24 +208,21 @@ ar15HandguardRouter.get('/enums', (req, res) => {
   }
 });
 
-// PUT /groups/:groupId - Update an existing handguard group
+// PUT /groups/:groupId - Update a handguard group
 ar15HandguardRouter.put('/groups/:groupId', async (req, res) => {
   try {
     const { groupId } = req.params;
     const handguardGroupData = req.body;
 
-    // Validate required fields for the handguard group
     if (!handguardGroupData.name) {
       return res.status(400).json({ message: 'Handguard group name is required' });
     }
 
-    // Find the existing handguard group
     const handguardGroup = await AR15HandguardGroup.findById(groupId);
     if (!handguardGroup) {
       return res.status(404).json({ message: `Handguard group with _id "${groupId}" not found` });
     }
 
-    // Update the handguard group fields
     handguardGroup.name = handguardGroupData.name;
     handguardGroup.description = handguardGroupData.description;
     handguardGroup.components.specifications = handguardGroupData.components?.specifications || handguardGroup.components.specifications;
@@ -254,16 +247,15 @@ ar15HandguardRouter.put('/groups/:groupId', async (req, res) => {
   }
 });
 
-// PUT /variants/:variantId - Update an existing handguard variant
+// PUT /variants/:variantId - Update a handguard variant
 ar15HandguardRouter.put('/variants/:variantId', async (req, res) => {
   try {
     const { variantId } = req.params;
     const handguardData = req.body;
 
-    // Validate required fields
     if (!handguardData.attributes || Object.keys(handguardData.attributes).length === 0) {
       return res.status(400).json({
-        message: 'At least one variant-specific attribute is required. Examples include: color, profile, subCategory, features, innerDiameter, outerDiameter, hasCutouts, ventedDesign.'
+        message: 'At least one variant-specific attribute is required (e.g., color, profile, subCategory, features).'
       });
     }
     if (!handguardData.upc) {
@@ -272,7 +264,7 @@ ar15HandguardRouter.put('/variants/:variantId', async (req, res) => {
     if (!handguardData.compatibility?.requiredUpperReceiver?.some(r => r.type && r.fitmentType)) {
       return res.status(400).json({ message: 'At least one requiredUpperReceiver with type and fitmentType is mandatory' });
     }
-    if (!handguardData.compatibility?.requiredBarrelNut?.type) { // Changed: Only require type
+    if (!handguardData.compatibility?.requiredBarrelNut?.type) {
       return res.status(400).json({ message: 'Required Barrel Nut type is mandatory' });
     }
     if (!handguardData.compatibility?.mountingSystem?.type) {
@@ -288,13 +280,11 @@ ar15HandguardRouter.put('/variants/:variantId', async (req, res) => {
       return res.status(400).json({ message: 'Last Updated is required' });
     }
 
-    // Find the existing handguard variant
     const handguardVariant = await AR15Handguard.findById(variantId);
     if (!handguardVariant) {
       return res.status(404).json({ message: `Handguard variant with _id "${variantId}" not found` });
     }
 
-    // Update the handguard variant fields
     handguardVariant.attributes = handguardData.attributes;
     handguardVariant.upc = handguardData.upc;
     handguardVariant.images = handguardData.images || handguardVariant.images;
