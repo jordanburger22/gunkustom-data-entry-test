@@ -25,6 +25,7 @@ const HANDGUARD_FEATURES = [
   'Ventilation Slots',
   'Integrated Bipod Mount',
   'Full-Length Top Rail',
+  'Full-length Picatinny Rail',
   'M-LOK Slots', // ADDED: Extended to include common feature, aligning with JSON’s intent
   'KeyMod Slots' // ADDED: Extended for completeness
 ];
