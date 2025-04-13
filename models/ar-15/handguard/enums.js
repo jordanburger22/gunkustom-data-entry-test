@@ -4,7 +4,7 @@
 const HANDGUARD_COLORS = ['Black', 'Flat Dark Earth', 'OD Green', 'Gray', 'Burnt Bronze']; // ADDED: For `color` field, aligning with grip/trigger guard patterns
 
 // Enum for handguard material types
-const HANDGUARD_MATERIALS = ['Aluminum', 'Polymer', 'Carbon Fiber']; // PRESERVED: Matches JSON and junior dev’s enums
+const HANDGUARD_MATERIALS = ['Aluminum', 'Polymer', 'Carbon Fiber', 'Aluminum (6061-T6)']; // PRESERVED: Matches JSON and junior dev’s enums
 
 // Enum for handguard finish types
 const HANDGUARD_FINISHES = ['Anodized', 'Cerakote', 'Matte']; // PRESERVED: Matches JSON and junior dev’s enums
