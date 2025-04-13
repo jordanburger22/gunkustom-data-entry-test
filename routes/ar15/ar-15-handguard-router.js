@@ -14,7 +14,7 @@ const {
   MOUNTING_SYSTEMS,
   RAIL_COMPATIBILITIES,
   GAS_SYSTEM_TYPES,
-  INSTALLATION_TYPES // Added to support installationType validation
+  INSTALLATION_TYPES
 } = require('../../models/ar-15/handguard/enums');
 
 // POST /groups - Add a new handguard group
@@ -71,14 +71,11 @@ ar15HandguardRouter.post('/groups/:groupId', async (req, res) => {
     if (!handguardData.upc) {
       return res.status(400).json({ message: 'UPC is required for a handguard variant' });
     }
-    // Added validation for required compatibility fields to match AddHandguardVariantModal.js
     if (!handguardData.compatibility?.requiredUpperReceiver?.some(r => r.type && r.fitmentType)) {
       return res.status(400).json({ message: 'At least one requiredUpperReceiver with type and fitmentType is mandatory' });
     }
-    if (!handguardData.compatibility?.requiredBarrelNut?.type ||
-      !handguardData.compatibility?.requiredBarrelNut?.thread ||
-      !handguardData.compatibility?.requiredBarrelNut?.diameter) {
-      return res.status(400).json({ message: 'Required Barrel Nut fields (type, thread, diameter) are mandatory' });
+    if (!handguardData.compatibility?.requiredBarrelNut?.type) { // Changed: Only require type
+      return res.status(400).json({ message: 'Required Barrel Nut type is mandatory' });
     }
     if (!handguardData.compatibility?.mountingSystem?.type) {
       return res.status(400).json({ message: 'Mounting System type is required' });
@@ -96,7 +93,7 @@ ar15HandguardRouter.post('/groups/:groupId', async (req, res) => {
     // Verify that the groupId exists
     const handguardGroup = await AR15HandguardGroup.findById(groupId);
     if (!handguardGroup) {
-      return res.status(404).json({ message: `Handguard group with _id "${groupId}" not found` });
+      return res.status(400).json({ message: `Handguard group with _id "${groupId}" not found` });
     }
 
     // Create the handguard variant
@@ -119,7 +116,6 @@ ar15HandguardRouter.post('/groups/:groupId', async (req, res) => {
       throw error;
     }
 
-    // Fixed typo: changed handplasguardId to handguardId
     res.status(201).json({ message: 'AR-15 handguard variant added successfully', handguardId: newHandguard._id });
   } catch (error) {
     console.error('Error adding AR-15 handguard variant:', error.message);
@@ -195,7 +191,6 @@ ar15HandguardRouter.get('/groups/:groupId/variants', async (req, res) => {
 // GET /enums - Fetch all enums for handguards
 ar15HandguardRouter.get('/enums', (req, res) => {
   try {
-    // Updated to include INSTALLATION_TYPES
     const enums = {
       colors: HANDGUARD_COLORS,
       materials: HANDGUARD_MATERIALS,
@@ -274,14 +269,11 @@ ar15HandguardRouter.put('/variants/:variantId', async (req, res) => {
     if (!handguardData.upc) {
       return res.status(400).json({ message: 'UPC is required for a handguard variant' });
     }
-    // Added validation for required compatibility fields to match AddHandguardVariantModal.js
     if (!handguardData.compatibility?.requiredUpperReceiver?.some(r => r.type && r.fitmentType)) {
       return res.status(400).json({ message: 'At least one requiredUpperReceiver with type and fitmentType is mandatory' });
     }
-    if (!handguardData.compatibility?.requiredBarrelNut?.type ||
-      !handguardData.compatibility?.requiredBarrelNut?.thread ||
-      !handguardData.compatibility?.requiredBarrelNut?.diameter) {
-      return res.status(400).json({ message: 'Required Barrel Nut fields (type, thread, diameter) are mandatory' });
+    if (!handguardData.compatibility?.requiredBarrelNut?.type) { // Changed: Only require type
+      return res.status(400).json({ message: 'Required Barrel Nut type is mandatory' });
     }
     if (!handguardData.compatibility?.mountingSystem?.type) {
       return res.status(400).json({ message: 'Mounting System type is required' });
@@ -326,4 +318,4 @@ ar15HandguardRouter.put('/variants/:variantId', async (req, res) => {
   }
 });
 
-module.exports = ar15HandguardRouter
+module.exports = ar15HandguardRouter;
