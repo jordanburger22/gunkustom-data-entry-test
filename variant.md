@@ -1,6 +1,13 @@
 # AR-15 Gun Parts Compatibility Matrix
 
-This document provides compatibility matrices and example specifications for AR-15 gun parts, supporting an app for compatibility checking and price comparison using affiliate links, without carrying inventory. Each of the 37 variant models is detailed with a matrix of all interactions (direct and as subparts) and an example JSON object containing validated compatibility fields (e.g., diameters, caliber) and customer-relevant specs (e.g., material, weight, finish) to inform users comprehensively. Fields are optional to avoid errors, and checks use direct comparisons (e.g., `handguard.innerDiameter >= barrel.outerDiameterAtGasPort`). Composite parts include subparts via `includedParts` (group names, e.g., `["AR15BarrelGroup"]`) and are tagged for primary searches (e.g., `["UpperReceiver"]`). Each variant model includes an empty `vendor` array for future affiliate links.
+This document outlines compatibility matrices and example specifications for AR-15 gun parts, designed to support an app for compatibility checking and price comparison via affiliate links, without holding inventory. It covers 37 variant models, split into upper receiver (17) and lower receiver (20) groups. Each model includes:
+
+- **Compatibility Matrix**: Lists all interactions (as Model A and Model B) with direct comparison checks (e.g., `pinDiameter === triggerPinDiameter`).
+- **Example JSON Object**: Includes validated compatibility fields (e.g., diameters, calibers), customer-relevant specs (e.g., material, weight, finish), and a `groupId` referencing the corresponding group model/schema (e.g., `AR15UpperReceiverGroup` or `AR15LowerReceiverGroup`). All fields are optional to prevent errors.
+
+Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subparts, and `categoryTags` (e.g., `["UpperReceiver"]`) aid primary searches. An empty `vendor` array is included for future affiliate links.
+
+---
 
 ## AR15Handguard
 ### Compatibility Matrix
@@ -12,12 +19,17 @@ This document provides compatibility matrices and example specifications for AR-
 | Handguard             | Barrel                | `innerDiameter` >= `outerDiameterAtGasPort` AND `barrelDiameterMax` >= `outerDiameterAtGasPort`   |
 | Handguard             | GasSystem             | `gasSystemCompatibility` includes `gasLength`                                                     |
 | CompleteUpperReceiver | Handguard             | `receiverType` === `requiredUpperReceiverType`                                                    |
+| StrippedUpperReceiver | Handguard             | `receiverType` === `requiredUpperReceiverType`                                                    |
+| BarrelNut             | Handguard             | `type` === `requiredBarrelNutType` AND (`thread` === `requiredBarrelNutThread` OR both undefined) |
+| Barrel                | Handguard             | `outerDiameterAtGasPort` <= `innerDiameter` AND `outerDiameterAtGasPort` <= `barrelDiameterMax`   |
+| GasSystem             | Handguard             | `gasLength` in `gasSystemCompatibility`                                                           |
 
 ### Example JSON
 ```json
 {
   "model": "AR15Handguard",
   "upc": "815421021035",
+  "groupId": "507f1f77bcf86cd799439011",
   "length": 12.7,
   "innerDiameter": 1.3,
   "mountingSystem": "M-LOK",
@@ -30,6 +42,9 @@ This document provides compatibility matrices and example specifications for AR-
   "weight": 8.5,
   "finish": "Hardcoat Anodized",
   "color": ["Black"],
+  "mountingSystemVariants": ["M-LOK", "KeyMod"],
+  "railLength": 12.7,
+  "attachmentType": "Free-Float",
   "brandExample": "Aero Precision",
   "durability": "High-strength, corrosion-resistant",
   "notes": "Compatible with Mil-Spec upper receivers, ideal for tactical builds",
@@ -39,41 +54,36 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
+---
+
 ## AR15CompleteUpperReceiver
 ### Compatibility Matrix
-| Model A               | Model B               | Compatibility Check                                                                                                        |
-|-----------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------|
-| CompleteUpperReceiver | Handguard             | `receiverType` === `requiredUpperReceiverType`                                                                             |
-| CompleteUpperReceiver | StrippedUpperReceiver | `receiverType` === `receiverType` (via `includedParts` reference to `AR15StrippedUpperReceiverGroup`)                      |
-| CompleteUpperReceiver | BarrelNut             | `barrelNutThread` === `thread` OR both undefined                                                                           |
-| CompleteUpperReceiver | Barrel                | Included `AR15BarrelGroup` in `includedParts`, `receiverType` === `receiverFit`                                            |
-| CompleteUpperReceiver | BoltCarrierGroup      | Included `AR15BoltCarrierGroupGroup` in `includedParts`, `receiverType` === `receiverFit`                                  |
-| CompleteUpperReceiver | EjectionPortCover     | Included `AR15EjectionPortCoverGroup` in `includedParts`, `receiverType` === `receiverFit`                                 |
-| CompleteUpperReceiver | EjectionPortHardware  | Included `AR15EjectionPortHardwareGroup` in `includedParts`, `receiverType` === `coverFit`                                 |
-| CompleteUpperReceiver | ForwardAssist         | Included `AR15ForwardAssistGroup` in `includedParts`, `receiverType` === `receiverFit`                                     |
-| CompleteUpperReceiver | ChargingHandle        | Included `AR15ChargingHandleGroup` in `includedParts`, `receiverType` === `receiverFit`                                    |
-| CompleteUpperReceiver | GasSystem             | Included `AR15GasSystemGroup` in `includedParts`, included barrel’s `receiverFit` compatible with `receiverType`           |
-| CompleteUpperReceiver | MuzzleDevice          | Included `AR15MuzzleDeviceGroup` in `includedParts`, matches included barrel’s `threading` and `caliber`                   |
-| Handguard             | CompleteUpperReceiver | `requiredUpperReceiverType` === `receiverType`                                                                             |
-| StrippedUpperReceiver | CompleteUpperReceiver | `receiverType` === `receiverType` (via `includedParts`)                                                                    |
-| BarrelNut             | CompleteUpperReceiver | `thread` === `barrelNutThread` AND `receiverFit` === `receiverType` OR both undefined                                      |
-| Barrel                | CompleteUpperReceiver | Included in `includedParts` as `AR15BarrelGroup`, `receiverFit` === `receiverType`                                         |
-| BoltCarrierGroup      | CompleteUpperReceiver | Included in `includedParts` as `AR15BoltCarrierGroupGroup`, `receiverFit` === `receiverType`                               |
-| EjectionPortCover     | CompleteUpperReceiver | Included in `includedParts` as `AR15EjectionPortCoverGroup`, `receiverType` === `receiverFit`                              |
-| EjectionPortHardware  | CompleteUpperReceiver | Included in `includedParts` as `AR15EjectionPortHardwareGroup`, `receiverType` === `coverFit`                              |
-| ForwardAssist         | CompleteUpperReceiver | Included in `includedParts` as `AR15ForwardAssistGroup`, `receiverType` === `receiverFit`                                  |
-| ChargingHandle        | CompleteUpperReceiver | `receiverFit` === `receiverType`                                                                                           |
-| GasSystem             | CompleteUpperReceiver | Included in `includedParts` as `AR15GasSystemGroup`                                                                        |
-| MuzzleDevice          | CompleteUpperReceiver | Included `AR15MuzzleDeviceGroup` in `includedParts`, matches included barrel’s `threading` and `caliber`                   |
-| CompleteLowerReceiver | CompleteUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group) |
-| StrippedLowerReceiver | CompleteUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group) |
-| Magazine              | CompleteUpperReceiver | `caliber` === included barrel’s `caliber` AND included bolt’s `caliber` (inter-group)                                      |
+| Model A               | Model B               | Compatibility Check                                                                                     |
+|-----------------------|-----------------------|---------------------------------------------------------------------------------------------------------|
+| CompleteUpperReceiver | Handguard             | `receiverType` === `requiredUpperReceiverType`                                                          |
+| CompleteUpperReceiver | StrippedUpperReceiver | `receiverType` === `receiverType` (via `includedParts`)                                                 |
+| CompleteUpperReceiver | BarrelNut             | `barrelNutThread` === `thread` OR both undefined                                                        |
+| CompleteUpperReceiver | Barrel                | Included `AR15BarrelGroup` in `includedParts`, `receiverType` === `receiverFit`                         |
+| CompleteUpperReceiver | BoltCarrierGroup      | Included `AR15BoltCarrierGroupGroup` in `includedParts`, `receiverType` === `receiverFit`               |
+| CompleteUpperReceiver | ChargingHandle        | Included `AR15ChargingHandleGroup` in `includedParts`, `receiverType` === `receiverFit`                 |
+| CompleteUpperReceiver | GasSystem             | Included `AR15GasSystemGroup` in `includedParts`, `receiverType` compatible with barrel’s `receiverFit` |
+| CompleteUpperReceiver | MuzzleDevice          | Included `AR15MuzzleDeviceGroup` in `includedParts`, matches barrel’s `threading` and `caliber`         |
+| Handguard             | CompleteUpperReceiver | `requiredUpperReceiverType` === `receiverType`                                                          |
+| StrippedUpperReceiver | CompleteUpperReceiver | `receiverType` === `receiverType` (via `includedParts`)                                                 |
+| BarrelNut             | CompleteUpperReceiver | `thread` === `barrelNutThread` OR both undefined                                                        |
+| Barrel                | CompleteUpperReceiver | Included in `includedParts` as `AR15BarrelGroup`, `receiverFit` === `receiverType`                      |
+| BoltCarrierGroup      | CompleteUpperReceiver | Included in `includedParts` as `AR15BoltCarrierGroupGroup`, `receiverFit` === `receiverType`            |
+| ChargingHandle        | CompleteUpperReceiver | `receiverFit` === `receiverType`                                                                        |
+| GasSystem             | CompleteUpperReceiver | Included in `includedParts` as `AR15GasSystemGroup`                                                     |
+| MuzzleDevice          | CompleteUpperReceiver | Included in `includedParts` as `AR15MuzzleDeviceGroup`, matches barrel’s `threading` and `caliber`      |
+| CompleteLowerReceiver | CompleteUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes barrel’s `caliber`  |
 
 ### Example JSON
 ```json
 {
   "model": "AR15CompleteUpperReceiver",
   "upc": "123456789012",
+  "groupId": "507f1f77bcf86cd799439011",
   "receiverType": "Mil-Spec",
   "barrelNutThread": "1-7/16-16",
   "railType": "Picatinny",
@@ -87,254 +97,53 @@ This document provides compatibility matrices and example specifications for AR-
   "durability": "High-strength, corrosion-resistant",
   "notes": "Includes Mil-Spec barrel, BCG, and charging handle; compatible with Mil-Spec lowers",
   "categoryTags": ["UpperReceiver", "Receiver"],
-  "includedParts": ["AR15BarrelGroup", "AR15MuzzleDeviceGroup", "AR15HandguardGroup", "AR15BoltCarrierGroupGroup", "AR15EjectionPortCoverGroup", "AR15EjectionPortHardwareGroup", "AR15ForwardAssistGroup", "AR15ChargingHandleGroup", "AR15GasSystemGroup", "AR15BarrelNutGroup"],
+  "includedParts": ["AR15BarrelGroup", "AR15HandguardGroup", "AR15BoltCarrierGroupGroup", "AR15ChargingHandleGroup", "AR15GasSystemGroup", "AR15MuzzleDeviceGroup"],
   "vendor": []
 }
 ```
 
+---
+
 ## AR15StrippedUpperReceiver
 ### Compatibility Matrix
-| Model A               | Model B               | Compatibility Check                                                                                                        |
-|-----------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------|
-| StrippedUpperReceiver | Handguard             | `receiverType` === `requiredUpperReceiverType`                                                                             |
-| StrippedUpperReceiver | BarrelNut             | `barrelNutThread` === `thread` OR both undefined                                                                           |
-| StrippedUpperReceiver | EjectionPortCover     | `ejectionPortFit` === `receiverFit`                                                                                        |
-| StrippedUpperReceiver | ForwardAssist         | `forwardAssistFit` === `receiverFit`                                                                                       |
-| Handguard             | StrippedUpperReceiver | `requiredUpperReceiverType` === `receiverType`                                                                             |
-| CompleteUpperReceiver | StrippedUpperReceiver | `receiverType` === `receiverType` (via `includedParts` reference to `AR15StrippedUpperReceiverGroup`)                      |
-| BarrelNut             | StrippedUpperReceiver | `thread` === `barrelNutThread` AND `receiverFit` === `receiverType` OR both undefined                                      |
-| CompleteLowerReceiver | StrippedUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group) |
-| StrippedLowerReceiver | StrippedUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group) |
-| Magazine              | StrippedUpperReceiver | `caliber` === included barrel’s `caliber` AND included bolt’s `caliber` (inter-group)                                      |
+| Model A               | Model B               | Compatibility Check                                                                                 |
+|-----------------------|-----------------------|-----------------------------------------------------------------------------------------------------|
+| StrippedUpperReceiver | Handguard             | `receiverType` === `requiredUpperReceiverType`                                                      |
+| StrippedUpperReceiver | Barrel                | `receiverType` === `receiverFit`                                                                    |
+| StrippedUpperReceiver | BoltCarrierGroup      | `receiverType` === `receiverFit`                                                                    |
+| StrippedUpperReceiver | ChargingHandle        | `receiverType` === `receiverFit`                                                                    |
+| StrippedUpperReceiver | ForwardAssist         | `receiverType` === `forwardAssistFit`                                                               |
+| StrippedUpperReceiver | EjectionPortCover     | `receiverType` === `ejectionPortFit`                                                                |
+| StrippedUpperReceiver | CompleteLowerReceiver | `receiverType` === `receiverFit` AND barrel/bolt `caliber` in `caliberCompatibility` (via assembly) |
+| Handguard             | StrippedUpperReceiver | `requiredUpperReceiverType` === `receiverType`                                                      |
+| Barrel                | StrippedUpperReceiver | `receiverFit` === `receiverType`                                                                    |
+| BoltCarrierGroup      | StrippedUpperReceiver | `receiverFit` === `receiverType`                                                                    |
+| ChargingHandle        | StrippedUpperReceiver | `receiverFit` === `receiverType`                                                                    |
+| ForwardAssist         | StrippedUpperReceiver | `forwardAssistFit` === `receiverType`                                                               |
+| EjectionPortCover     | StrippedUpperReceiver | `ejectionPortFit` === `receiverType`                                                                |
+| CompleteLowerReceiver | StrippedUpperReceiver | `receiverFit` === `receiverType` AND barrel/bolt `caliber` in `caliberCompatibility` (via assembly) |
 
 ### Example JSON
 ```json
 {
   "model": "AR15StrippedUpperReceiver",
-  "upc": "123456789013",
+  "upc": "123456789087",
+  "groupId": "507f1f77bcf86cd799439011",
   "receiverType": "Mil-Spec",
-  "barrelNutThread": "1-7/16-16",
-  "ejectionPortFit": "Mil-Spec",
-  "forwardAssistFit": "Mil-Spec",
   "material": "7075-T6 Aluminum",
-  "weight": 7.0,
+  "weight": 6.9,
   "finish": "Hardcoat Anodized",
   "color": ["Black"],
-  "length": 8.0,
   "brandExample": "Aero Precision",
-  "durability": "High-strength, corrosion-resistant",
-  "notes": "Requires assembly with barrel, handguard, and other components",
-  "categoryTags": ["UpperReceiver", "Receiver"],
-  "includedParts": ["AR15StrippedUpperReceiverGroup"],
+  "durability": "Forged, lightweight",
+  "notes": "Requires barrel, BCG, and handguard for completion",
+  "categoryTags": ["UpperReceiver", "BaseComponent"],
+  "includedParts": [],
   "vendor": []
 }
 ```
 
-## AR15EjectionPortCover
-### Compatibility Matrix
-| Model A               | Model B               | Compatibility Check                                                                           |
-|-----------------------|-----------------------|-----------------------------------------------------------------------------------------------|
-| EjectionPortCover     | CompleteUpperReceiver | Included in `includedParts` as `AR15EjectionPortCoverGroup`, `receiverType` === `receiverFit` |
-| EjectionPortCover     | StrippedUpperReceiver | `receiverFit` === `ejectionPortFit`                                                           |
-| CompleteUpperReceiver | EjectionPortCover     | Included `AR15EjectionPortCoverGroup` in `includedParts`, `receiverType` === `receiverFit`    |
-| StrippedUpperReceiver | EjectionPortCover     | `ejectionPortFit` === `receiverFit`                                                           |
-
-### Example JSON
-```json
-{
-  "model": "AR15EjectionPortCover",
-  "upc": "123456789016",
-  "receiverFit": "Mil-Spec",
-  "material": "Steel",
-  "weight": 0.5,
-  "finish": "Phosphate",
-  "color": ["Black"],
-  "length": 3.0,
-  "brandExample": "Colt",
-  "durability": "Robust, weather-resistant",
-  "notes": "Fits Mil-Spec upper receivers, includes spring-loaded mechanism",
-  "categoryTags": ["UpperReceiver", "ReceiverParts"],
-  "includedParts": ["AR15EjectionPortCoverGroup"],
-  "vendor": []
-}
-```
-
-## AR15EjectionPortHardware
-### Compatibility Matrix
-| Model A               | Model B               | Compatibility Check                                                                           |
-|-----------------------|-----------------------|-----------------------------------------------------------------------------------------------|
-| EjectionPortHardware  | CompleteUpperReceiver | Included in `includedParts` as `AR15EjectionPortHardwareGroup`, `receiverType` === `coverFit` |
-| CompleteUpperReceiver | EjectionPortHardware  | Included `AR15EjectionPortHardwareGroup` in `includedParts`, `receiverType` === `coverFit`    |
-
-### Example JSON
-```json
-{
-  "model": "AR15EjectionPortHardware",
-  "upc": "123456789017",
-  "coverFit": "Mil-Spec Cover",
-  "material": "Steel",
-  "weight": 0.2,
-  "finish": "Phosphate",
-  "color": ["Black"],
-  "components": ["Spring", "Pin"],
-  "brandExample": "Anderson Manufacturing",
-  "durability": "High-tension, corrosion-resistant",
-  "notes": "Includes spring and pin for Mil-Spec ejection port covers",
-  "categoryTags": ["UpperReceiver", "ReceiverParts"],
-  "includedParts": ["AR15EjectionPortHardwareGroup"],
-  "vendor": []
-}
-```
-
-## AR15ForwardAssist
-### Compatibility Matrix
-| Model A               | Model B               | Compatibility Check                                                                       |
-|-----------------------|-----------------------|-------------------------------------------------------------------------------------------|
-| ForwardAssist         | CompleteUpperReceiver | Included in `includedParts` as `AR15ForwardAssistGroup`, `receiverType` === `receiverFit` |
-| ForwardAssist         | StrippedUpperReceiver | `receiverFit` === `forwardAssistFit`                                                      |
-| CompleteUpperReceiver | ForwardAssist         | Included `AR15ForwardAssistGroup` in `includedParts`, `receiverType` === `receiverFit`    |
-| StrippedUpperReceiver | ForwardAssist         | `forwardAssistFit` === `receiverFit`                                                      |
-
-### Example JSON
-```json
-{
-  "model": "AR15ForwardAssist",
-  "upc": "123456789018",
-  "receiverFit": "Mil-Spec",
-  "designType": "Round",
-  "material": "Steel",
-  "weight": 0.3,
-  "finish": "Phosphate",
-  "color": ["Black"],
-  "brandExample": "Daniel Defense",
-  "durability": "Reliable under heavy use",
-  "notes": "Standard round design for Mil-Spec uppers",
-  "categoryTags": ["UpperReceiver", "ReceiverParts"],
-  "includedParts": ["AR15ForwardAssistGroup"],
-  "vendor": []
-}
-```
-
-## AR15BoltCarrierGroup
-### Compatibility Matrix
-| Model A               | Model B               | Compatibility Check                                                                          |
-|-----------------------|-----------------------|----------------------------------------------------------------------------------------------|
-| BoltCarrierGroup      | CompleteUpperReceiver | Included in `includedParts` as `AR15BoltCarrierGroupGroup`, `receiverFit` === `receiverType` |
-| BoltCarrierGroup      | Barrel                | Included bolt’s `caliber` === `caliber`                                                      |
-| BoltCarrierGroup      | Bolt                  | Included `AR15BoltGroup` in `includedParts`, `carrierFit` matches                            |
-| BoltCarrierGroup      | BoltHardware          | Included `AR15BoltHardwareGroup` in `includedParts`, `carrierFit` matches                    |
-| BoltCarrierGroup      | CamPin                | Included `AR15CamPinGroup` in `includedParts`, `carrierFit` matches                          |
-| BoltCarrierGroup      | ChargingHandle        | `receiverFit` matches (both compatible with same upper receiver)                             |
-| CompleteUpperReceiver | BoltCarrierGroup      | Included `AR15BoltCarrierGroupGroup` in `includedParts`, `receiverType` === `receiverFit`    |
-| Barrel                | BoltCarrierGroup      | `caliber` === included bolt’s `caliber`                                                      |
-| Bolt                  | BoltCarrierGroup      | Included in `includedParts` as `AR15BoltGroup`, `carrierFit` matches                         |
-| BoltHardware          | BoltCarrierGroup      | Included in `includedParts` as `AR15BoltHardwareGroup`, `carrierFit` matches                 |
-| CamPin                | BoltCarrierGroup      | Included in `includedParts` as `AR15CamPinGroup`, `carrierFit` matches                       |
-| ChargingHandle        | BoltCarrierGroup      | `receiverFit` matches (both compatible with same upper receiver)                             |
-
-### Example JSON
-```json
-{
-  "model": "AR15BoltCarrierGroup",
-  "upc": "123456789019",
-  "carrierType": "Full-Auto",
-  "receiverFit": "Mil-Spec",
-  "caliberCompatibility": "5.56mm",
-  "material": "Carpenter 158 Steel",
-  "weight": 11.5,
-  "finish": "Phosphate",
-  "color": ["Black"],
-  "brandExample": "Toolcraft",
-  "durability": "MIL-STD-171, high wear resistance",
-  "notes": "Includes bolt, cam pin, and firing pin; Mil-Spec compatible",
-  "categoryTags": ["UpperReceiver", "BoltCarrier"],
-  "includedParts": ["AR15BoltGroup", "AR15BoltHardwareGroup", "AR15CamPinGroup"],
-  "vendor": []
-}
-```
-
-## AR15Bolt
-### Compatibility Matrix
-| Model A               | Model B          | Compatibility Check                                                                              |
-|-----------------------|------------------|--------------------------------------------------------------------------------------------------|
-| Bolt                  | BoltCarrierGroup | Included in `includedParts` as `AR15BoltGroup`, `carrierFit` matches                             |
-| BoltCarrierGroup      | Bolt             | Included `AR15BoltGroup` in `includedParts`, `carrierFit` matches                                |
-| CompleteUpperReceiver | Bolt             | Included `AR15BoltGroup` in `includedParts` (via `AR15BoltCarrierGroupGroup`), `caliber` matches |
-
-### Example JSON
-```json
-{
-  "model": "AR15Bolt",
-  "upc": "123456789020",
-  "material": "Carpenter 158 Steel",
-  "carrierFit": "Mil-Spec Carrier",
-  "caliber": "5.56mm",
-  "weight": 1.5,
-  "finish": "Phosphate",
-  "color": ["Black"],
-  "brandExample": "FailZero",
-  "durability": "High wear resistance",
-  "notes": "Fits Mil-Spec bolt carrier groups, tested for reliability",
-  "categoryTags": ["UpperReceiver", "BoltCarrier", "ReceiverParts"],
-  "includedParts": ["AR15BoltGroup"],
-  "vendor": []
-}
-```
-
-## AR15BoltHardware
-### Compatibility Matrix
-| Model A               | Model B          | Compatibility Check                                                                                         |
-|-----------------------|------------------|-------------------------------------------------------------------------------------------------------------|
-| BoltHardware          | BoltCarrierGroup | Included in `includedParts` as `AR15BoltHardwareGroup`, `carrierFit` matches                                |
-| BoltCarrierGroup      | BoltHardware     | Included `AR15BoltHardwareGroup` in `includedParts`, `carrierFit` matches                                   |
-| CompleteUpperReceiver | BoltHardware     | Included `AR15BoltHardwareGroup` in `includedParts` (via `AR15BoltCarrierGroupGroup`), `carrierFit` matches |
-
-### Example JSON
-```json
-{
-  "model": "AR15BoltHardware",
-  "upc": "123456789021",
-  "carrierFit": "Mil-Spec Carrier",
-  "components": ["Firing Pin", "Extractor", "Ejector"],
-  "material": "Steel",
-  "weight": 0.3,
-  "finish": "Phosphate",
-  "color": ["Black"],
-  "brandExample": "Spikes Tactical",
-  "durability": "High-tension components",
-  "notes": "Includes firing pin, extractor, and ejector for Mil-Spec BCGs",
-  "categoryTags": ["UpperReceiver", "BoltCarrier", "ReceiverParts"],
-  "includedParts": ["AR15BoltHardwareGroup"],
-  "vendor": []
-}
-```
-
-## AR15CamPin
-### Compatibility Matrix
-| Model A               | Model B          | Compatibility Check                                                                                   |
-|-----------------------|------------------|-------------------------------------------------------------------------------------------------------|
-| CamPin                | BoltCarrierGroup | Included in `includedParts` as `AR15CamPinGroup`, `carrierFit` matches                                |
-| BoltCarrierGroup      | CamPin           | Included `AR15CamPinGroup` in `includedParts`, `carrierFit` matches                                   |
-| CompleteUpperReceiver | CamPin           | Included `AR15CamPinGroup` in `includedParts` (via `AR15BoltCarrierGroupGroup`), `carrierFit` matches |
-
-### Example JSON
-```json
-{
-  "model": "AR15CamPin",
-  "upc": "123456789022",
-  "carrierFit": "Mil-Spec Carrier",
-  "material": "Steel",
-  "weight": 0.1,
-  "finish": "Chromed",
-  "color": ["Silver"],
-  "brandExample": "Bravo Company",
-  "durability": "High wear resistance",
-  "notes": "Essential for Mil-Spec BCG operation",
-  "categoryTags": ["UpperReceiver", "BoltCarrier", "ReceiverParts"],
-  "includedParts": ["AR15CamPinGroup"],
-  "vendor": []
-}
-```
+---
 
 ## AR15Barrel
 ### Compatibility Matrix
@@ -345,18 +154,21 @@ This document provides compatibility matrices and example specifications for AR-
 | Barrel                | GasSystem             | `gasPortLocation` === `gasLength` AND `caliber` === `caliberCompatibility`                      |
 | Barrel                | BoltCarrierGroup      | `caliber` === included bolt’s `caliber`                                                         |
 | Barrel                | MuzzleDevice          | `threading` === `threading` AND `caliber` === `caliberCompatibility`                            |
+| Barrel                | Bolt                  | `caliber` === `caliber` AND `barrelType` === `boltType`                                         |
 | Handguard             | Barrel                | `innerDiameter` >= `outerDiameterAtGasPort` AND `barrelDiameterMax` >= `outerDiameterAtGasPort` |
 | CompleteUpperReceiver | Barrel                | Included `AR15BarrelGroup` in `includedParts`, `receiverType` === `receiverFit`                 |
 | GasSystem             | Barrel                | `gasLength` === `gasPortLocation` AND `caliberCompatibility` === `caliber`                      |
 | BoltCarrierGroup      | Barrel                | Included bolt’s `caliber` === `caliber`                                                         |
 | MuzzleDevice          | Barrel                | `threading` === `threading` AND `caliber` === `caliberCompatibility`                            |
 | Magazine              | Barrel                | `caliber` === `caliber` (inter-group via upper receiver)                                        |
+| Bolt                  | Barrel                | `caliber` === `caliber` AND `boltType` === `barrelType`                                         |
 
 ### Example JSON
 ```json
 {
   "model": "AR15Barrel",
   "upc": "123456789023",
+  "groupId": "507f1f77bcf86cd799439011",
   "length": 16.0,
   "outerDiameterAtGasPort": 0.75,
   "gasPortLocation": "Mid-length",
@@ -368,6 +180,9 @@ This document provides compatibility matrices and example specifications for AR-
   "weight": 28.0,
   "finish": "Phosphate",
   "color": ["Black"],
+  "twistRate": "1:7",
+  "profileVariants": ["M4", "Heavy"],
+  "gasSystemType": "Mid-length",
   "brandExample": "Ballistic Advantage",
   "durability": "MIL-STD, corrosion-resistant",
   "notes": "Mid-length gas system, Mil-Spec compatible",
@@ -377,20 +192,131 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
+---
+
+## AR15BoltCarrierGroup
+### Compatibility Matrix
+| Model A               | Model B               | Compatibility Check                                                                                                     |
+|-----------------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------|
+| BoltCarrierGroup      | CompleteUpperReceiver | Included in `includedParts`, `receiverFit` matches `receiverType` AND `caliber` matches included barrel’s `caliber`     |
+| BoltCarrierGroup      | StrippedUpperReceiver | `receiverFit` matches `receiverType` AND `caliber` matches included barrel’s `caliber` (via assembly)                   |
+| BoltCarrierGroup      | Barrel                | `caliber` matches `caliber` AND `boltType` matches `barrelType`                                                         |
+| BoltCarrierGroup      | Bolt                  | Included `AR15BoltGroup`, `boltType` matches BCG’s `boltType`                                                           |
+| BoltCarrierGroup      | ChargingHandle        | `receiverFit` matches `receiverFit` (both must fit the same upper receiver)                                             |
+| CompleteUpperReceiver | BoltCarrierGroup      | Included `AR15BoltCarrierGroup`, `receiverType` matches `receiverFit` AND `caliber` matches included barrel’s `caliber` |
+| StrippedUpperReceiver | BoltCarrierGroup      | `receiverType` matches `receiverFit` AND `caliber` matches included barrel’s `caliber` (via assembly)                   |
+| Barrel                | BoltCarrierGroup      | `caliber` matches `caliber` AND `barrelType` matches `boltType`                                                         |
+| Bolt                  | BoltCarrierGroup      | Included in `includedParts`, `boltType` matches BCG’s `boltType`                                                        |
+| ChargingHandle        | BoltCarrierGroup      | `receiverFit` matches `receiverFit` (both must fit the same upper receiver)                                             |
+
+### Example JSON
+```json
+{
+  "model": "AR15BoltCarrierGroup",
+  "upc": "123456789045",
+  "groupId": "507f1f77bcf86cd799439011",
+  "receiverFit": "Mil-Spec",
+  "caliber": "5.56mm",
+  "boltType": "Standard",
+  "material": "Steel",
+  "weight": 11.5,
+  "finish": "Nitride",
+  "color": ["Black"],
+  "brandExample": "Toolcraft",
+  "durability": "High-strength, corrosion-resistant",
+  "notes": "Compatible with Mil-Spec upper receivers and 5.56mm barrels",
+  "categoryTags": ["UpperReceiver", "BoltCarrierGroup"],
+  "includedParts": ["AR15BoltGroup"],
+  "vendor": []
+}
+```
+
+---
+
+## AR15ChargingHandle
+### Compatibility Matrix
+| Model A               | Model B               | Compatibility Check                                                         |
+|-----------------------|-----------------------|-----------------------------------------------------------------------------|
+| ChargingHandle        | CompleteUpperReceiver | Included in `includedParts`, `receiverFit` matches `receiverType`           |
+| ChargingHandle        | StrippedUpperReceiver | `receiverFit` matches `receiverType`                                        |
+| ChargingHandle        | BoltCarrierGroup      | `receiverFit` matches `receiverFit` (both must fit the same upper receiver) |
+| CompleteUpperReceiver | ChargingHandle        | Included `AR15ChargingHandleGroup`, `receiverType` matches `receiverFit`    |
+| StrippedUpperReceiver | ChargingHandle        | `receiverType` matches `receiverFit`                                        |
+| BoltCarrierGroup      | ChargingHandle        | `receiverFit` matches `receiverFit` (both must fit the same upper receiver) |
+
+### Example JSON
+```json
+{
+  "model": "AR15ChargingHandle",
+  "upc": "123456789046",
+  "groupId": "507f1f77bcf86cd799439011",
+  "receiverFit": "Mil-Spec",
+  "material": "Aluminum",
+  "weight": 1.2,
+  "finish": "Anodized",
+  "color": ["Black", "FDE"],
+  "brandExample": "Radian",
+  "durability": "Lightweight, durable",
+  "notes": "Ambidextrous design for Mil-Spec upper receivers",
+  "categoryTags": ["UpperReceiver", "ChargingHandle"],
+  "includedParts": ["AR15ChargingHandleGroup"],
+  "vendor": []
+}
+```
+
+---
+
+## AR15GasSystem
+### Compatibility Matrix
+| Model A   | Model B   | Compatibility Check                                                                  |
+|-----------|-----------|--------------------------------------------------------------------------------------|
+| GasSystem | Barrel    | `gasLength` === `gasPortLocation` AND `caliberCompatibility` === `caliber`           |
+| GasSystem | GasBlock  | Included `AR15GasBlockGroup` in `includedParts`, `gasSystemFit` matches              |
+| GasSystem | GasTube   | Included `AR15GasTubeGroup` in `includedParts`, `gasSystemFit` === `gasSystemFit`    |
+| GasSystem | Handguard | `gasSystemCompatibility` includes `gasLength`                                        |
+| Barrel    | GasSystem | `gasPortLocation` === `gasLength` AND `caliber` === `caliberCompatibility`           |
+| GasBlock  | GasSystem | Included in `includedParts` as `AR15GasBlockGroup`, `gasSystemFit` matches           |
+| GasTube   | GasSystem | Included in `includedParts` as `AR15GasTubeGroup`, `gasSystemFit` === `gasSystemFit` |
+| Handguard | GasSystem | `gasSystemCompatibility` includes `gasLength`                                        |
+
+### Example JSON
+```json
+{
+  "model": "AR15GasSystem",
+  "upc": "123456789047",
+  "groupId": "507f1f77bcf86cd799439011",
+  "gasLength": "Mid-length",
+  "caliberCompatibility": ["5.56mm"],
+  "material": "Steel",
+  "weight": 2.0,
+  "finish": "Phosphate",
+  "color": ["Black"],
+  "brandExample": "VLTOR",
+  "durability": "High corrosion resistance",
+  "notes": "Includes gas block and tube, optimized for 16-inch barrels",
+  "categoryTags": ["GasSystem", "BarrelAssembly"],
+  "includedParts": ["AR15GasBlockGroup", "AR15GasTubeGroup"],
+  "vendor": []
+}
+```
+
+---
+
 ## AR15MuzzleDevice
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                      |
 |-----------------------|-----------------------|----------------------------------------------------------------------------------------------------------|
-| MuzzleDevice          | CompleteUpperReceiver | Included `AR15MuzzleDeviceGroup` in `includedParts`, matches included barrel’s `threading` and `caliber` |
 | MuzzleDevice          | Barrel                | `threading` === `threading` AND `caliber` === `caliberCompatibility`                                     |
-| CompleteUpperReceiver | MuzzleDevice          | Included `AR15MuzzleDeviceGroup` in `includedParts`, matches included barrel’s `threading` and `caliber` |
+| MuzzleDevice          | CompleteUpperReceiver | Included `AR15MuzzleDeviceGroup` in `includedParts`, matches included barrel’s `threading` and `caliber` |
 | Barrel                | MuzzleDevice          | `threading` === `threading` AND `caliber` === `caliberCompatibility`                                     |
+| CompleteUpperReceiver | MuzzleDevice          | Included `AR15MuzzleDeviceGroup` in `includedParts`, matches included barrel’s `threading` and `caliber` |
 
 ### Example JSON
 ```json
 {
   "model": "AR15MuzzleDevice",
-  "upc": "123456789024",
+  "upc": "123456789048",
+  "groupId": "507f1f77bcf86cd799439011",
   "threading": "1/2-28",
   "caliberCompatibility": "5.56mm",
   "type": "Flash Hider",
@@ -408,40 +334,71 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15GasSystem
+---
+
+## AR15EjectionPortCover
 ### Compatibility Matrix
-| Model A               | Model B               | Compatibility Check                                                                                                           |
-|-----------------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| GasSystem             | Handguard             | `gasLength` in `gasSystemCompatibility`                                                                                       |
-| GasSystem             | Barrel                | `gasLength` === `gasPortLocation` AND `caliberCompatibility` === `caliber`                                                    |
-| GasSystem             | CompleteUpperReceiver | Included in `includedParts` as `AR15GasSystemGroup`                                                                           |
-| GasSystem             | GasBlock              | Included `AR15GasBlockGroup` in `includedParts`, `gasSystemFit` matches, `innerDiameter` >= barrel’s `outerDiameterAtGasPort` |
-| GasSystem             | GasTube               | Included `AR15GasTubeGroup` in `includedParts`, `gasSystemFit` === `gasSystemFit`, `length` matches                           |
-| Handguard             | GasSystem             | `gasSystemCompatibility` includes `gasLength`                                                                                 |
-| Barrel                | GasSystem             | `gasPortLocation` === `gasLength` AND `caliber` === `caliberCompatibility`                                                    |
-| CompleteUpperReceiver | GasSystem             | Included `AR15GasSystemGroup` in `includedParts`, included barrel’s `receiverFit` compatible with `receiverType`              |
-| GasBlock              | GasSystem             | Included in `includedParts` as `AR15GasBlockGroup`, `gasSystemFit` matches                                                    |
-| GasTube               | GasSystem             | Included in `includedParts` as `AR15GasTubeGroup`, `gasSystemFit` === `gasSystemFit`                                          |
+| Model A               | Model B               | Compatibility Check                                                                           |
+|-----------------------|-----------------------|-----------------------------------------------------------------------------------------------|
+| EjectionPortCover     | CompleteUpperReceiver | Included in `includedParts` as `AR15EjectionPortCoverGroup`, `receiverType` === `receiverFit` |
+| EjectionPortCover     | StrippedUpperReceiver | `receiverFit` === `ejectionPortFit`                                                           |
+| CompleteUpperReceiver | EjectionPortCover     | Included `AR15EjectionPortCoverGroup` in `includedParts`, `receiverType` === `receiverFit`    |
+| StrippedUpperReceiver | EjectionPortCover     | `ejectionPortFit` === `receiverFit`                                                           |
 
 ### Example JSON
 ```json
 {
-  "model": "AR15GasSystem",
-  "upc": "123456789025",
-  "gasLength": "Mid-length",
-  "caliberCompatibility": "5.56mm",
+  "model": "AR15EjectionPortCover",
+  "upc": "123456789016",
+  "groupId": "507f1f77bcf86cd799439011",
+  "receiverFit": "Mil-Spec",
   "material": "Steel",
-  "weight": 2.0,
+  "weight": 0.5,
   "finish": "Phosphate",
   "color": ["Black"],
-  "brandExample": "VLTOR",
-  "durability": "High corrosion resistance",
-  "notes": "Includes gas block and tube, optimized for 16-inch barrels",
-  "categoryTags": ["GasSystem", "BarrelAssembly"],
-  "includedParts": ["AR15GasBlockGroup", "AR15GasTubeGroup"],
+  "length": 3.0,
+  "brandExample": "Colt",
+  "durability": "Robust, weather-resistant",
+  "notes": "Fits Mil-Spec upper receivers, includes spring-loaded mechanism",
+  "categoryTags": ["UpperReceiver", "ReceiverParts"],
+  "includedParts": ["AR15EjectionPortCoverGroup"],
   "vendor": []
 }
 ```
+
+---
+
+## AR15ForwardAssist
+### Compatibility Matrix
+| Model A               | Model B               | Compatibility Check                                                                       |
+|-----------------------|-----------------------|-------------------------------------------------------------------------------------------|
+| ForwardAssist         | CompleteUpperReceiver | Included in `includedParts` as `AR15ForwardAssistGroup`, `receiverType` === `receiverFit` |
+| ForwardAssist         | StrippedUpperReceiver | `receiverFit` === `forwardAssistFit`                                                      |
+| CompleteUpperReceiver | ForwardAssist         | Included `AR15ForwardAssistGroup` in `includedParts`, `receiverType` === `receiverFit`    |
+| StrippedUpperReceiver | ForwardAssist         | `forwardAssistFit` === `receiverFit`                                                      |
+
+### Example JSON
+```json
+{
+  "model": "AR15ForwardAssist",
+  "upc": "123456789018",
+  "groupId": "507f1f77bcf86cd799439011",
+  "receiverFit": "Mil-Spec",
+  "designType": "Round",
+  "material": "Steel",
+  "weight": 0.3,
+  "finish": "Phosphate",
+  "color": ["Black"],
+  "brandExample": "Daniel Defense",
+  "durability": "Reliable under heavy use",
+  "notes": "Standard round design for Mil-Spec uppers",
+  "categoryTags": ["UpperReceiver", "ReceiverParts"],
+  "includedParts": ["AR15ForwardAssistGroup"],
+  "vendor": []
+}
+```
+
+---
 
 ## AR15GasBlock
 ### Compatibility Matrix
@@ -456,6 +413,7 @@ This document provides compatibility matrices and example specifications for AR-
 {
   "model": "AR15GasBlock",
   "upc": "123456789026",
+  "groupId": "507f1f77bcf86cd799439011",
   "innerDiameter": 0.75,
   "gasSystemFit": "Mid-length",
   "type": "Low-Profile",
@@ -472,8 +430,10 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15GasTube
-### Compatibility Matrix
+---
+
+### AR15GasTube
+#### Compatibility Matrix
 | Model A               | Model B   | Compatibility Check                                                                                 |
 |-----------------------|-----------|-----------------------------------------------------------------------------------------------------|
 | GasTube               | GasSystem | Included in `includedParts` as `AR15GasTubeGroup`, `gasSystemFit` === `gasSystemFit`                |
@@ -485,6 +445,7 @@ This document provides compatibility matrices and example specifications for AR-
 {
   "model": "AR15GasTube",
   "upc": "123456789027",
+  "groupId": "507f1f77bcf86cd799439011",
   "length": "Mid-length",
   "gasSystemFit": "Mid-length",
   "material": "Stainless Steel",
@@ -500,37 +461,10 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15ChargingHandle
-### Compatibility Matrix
-| Model A               | Model B               | Compatibility Check                                                                     |
-|-----------------------|-----------------------|-----------------------------------------------------------------------------------------|
-| ChargingHandle        | CompleteUpperReceiver | `receiverFit` === `receiverType`                                                        |
-| ChargingHandle        | BoltCarrierGroup      | `receiverFit` matches (both compatible with same upper receiver)                        |
-| CompleteUpperReceiver | ChargingHandle        | Included `AR15ChargingHandleGroup` in `includedParts`, `receiverType` === `receiverFit` |
-| BoltCarrierGroup      | ChargingHandle        | `receiverFit` matches (both compatible with same upper receiver)                        |
+---
 
-### Example JSON
-```json
-{
-  "model": "AR15ChargingHandle",
-  "upc": "123456789028",
-  "receiverFit": "Mil-Spec",
-  "designType": "Standard",
-  "material": "6061-T6 Aluminum",
-  "weight": 1.2,
-  "finish": "Hardcoat Anodized",
-  "color": ["Black"],
-  "brandExample": "Radian Raptor",
-  "durability": "High-strength, reliable operation",
-  "notes": "Standard design for Mil-Spec uppers",
-  "categoryTags": ["UpperReceiver", "ReceiverParts"],
-  "includedParts": ["AR15ChargingHandleGroup"],
-  "vendor": []
-}
-```
-
-## AR15BarrelNut
-### Compatibility Matrix
+### AR15BarrelNut
+#### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                               |
 |-----------------------|-----------------------|---------------------------------------------------------------------------------------------------|
 | BarrelNut             | Handguard             | `type` === `requiredBarrelNutType` AND (`thread` === `requiredBarrelNutThread` OR both undefined) |
@@ -545,6 +479,7 @@ This document provides compatibility matrices and example specifications for AR-
 {
   "model": "AR15BarrelNut",
   "upc": "123456789029",
+  "groupId": "507f1f77bcf86cd799439011",
   "type": "Mil-Spec",
   "thread": "1-7/16-16",
   "handguardFit": "Mil-Spec Handguard",
@@ -562,52 +497,157 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15CompleteLowerReceiver
+---
+
+### AR15CamPin
 ### Compatibility Matrix
-| Model A               | Model B               | Compatibility Check                                                                                                                                  |
-|-----------------------|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| CompleteLowerReceiver | StrippedLowerReceiver | `receiverType` === `receiverType` (via `includedParts` reference to `AR15StrippedLowerReceiverGroup`)                                                |
-| CompleteLowerReceiver | Trigger               | Included `AR15TriggerGroup` in `includedParts`, `triggerPinDiameter` === `pinDiameter`                                                               |
-| CompleteLowerReceiver | TriggerGuard          | Included `AR15TriggerGuardGroup` in `includedParts`, `receiverType` === `receiverFit` AND `triggerPinDiameter` === `pinDiameter`                     |
-| CompleteLowerReceiver | Grip                  | Included `AR15GripGroup` in `includedParts`, `receiverType` === `receiverFit`                                                                        |
-| CompleteLowerReceiver | Stock                 | Included `AR15StockGroup` in `includedParts`, `receiverType` compatible with included buffer tube’s `type`                                           |
-| CompleteLowerReceiver | BufferKit             | Included `AR15BufferKitGroup` in `includedParts`, included buffer tube’s `type` matches stock’s `bufferTubeType`                                     |
-| CompleteLowerReceiver | Magazine              | Included `AR15MagazineGroup` in `includedParts`, `caliberCompatibility` includes `caliber`                                                           |
-| CompleteLowerReceiver | TakedownPin           | Included `AR15TakedownPinGroup` in `includedParts`, `takedownPinDiameter` === `diameter`                                                             |
-| CompleteLowerReceiver | SafetySelector        | Included `AR15SafetySelectorGroup` in `includedParts`, `receiverType` === `receiverFit`                                                              |
-| CompleteLowerReceiver | BoltCatch             | Included `AR15BoltCatchGroup` in `includedParts`, `receiverType` === `receiverFit`                                                                   |
-| CompleteLowerReceiver | MagazineRelease       | Included `AR15MagazineReleaseGroup` in `includedParts`, `receiverType` === `receiverFit` AND `magazineFit` matches included magazine’s `receiverFit` |
-| CompleteLowerReceiver | FireControlGroup      | Included `AR15FireControlGroupGroup` in `includedParts`, `triggerPinDiameter` === `pinDiameter`                                                      |
-| CompleteLowerReceiver | ReceiverEndPlate      | Included `AR15ReceiverEndPlateGroup` in `includedParts`, included buffer tube’s `type` === `bufferTubeFit`                                           |
-| CompleteLowerReceiver | CastleNut             | Included `AR15CastleNutGroup` in `includedParts`, included buffer tube’s `type` === `bufferTubeFit`                                                  |
-| CompleteLowerReceiver | Detent                | Included `AR15DetentGroup` in `includedParts`, `receiverType` === `receiverFit`                                                                      |
-| CompleteLowerReceiver | Spring                | Included `AR15SpringGroup` in `includedParts`, `receiverType` === `receiverFit`                                                                      |
-| CompleteLowerReceiver | LowerPartsKit         | Included `AR15LowerPartsKitGroup` in `includedParts`, `receiverType` === `receiverFit`                                                               |
-| CompleteLowerReceiver | CompleteUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group)                           |
-| CompleteLowerReceiver | StrippedUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group)                           |
-| StrippedLowerReceiver | CompleteLowerReceiver | `receiverType` === `receiverType` (via `includedParts`)                                                                                              |
-| Trigger               | CompleteLowerReceiver | Included in `includedParts`, `pinDiameter` === `triggerPinDiameter`                                                                                  |
-| TriggerGuard          | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType` AND `pinDiameter` === `triggerPinDiameter`                                             |
-| Grip                  | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType`                                                                                        |
-| Stock                 | CompleteLowerReceiver | Included in `includedParts`, `bufferTubeType` matches included buffer tube’s `type`                                                                  |
-| BufferKit             | CompleteLowerReceiver | Included in `includedParts`, included buffer tube’s `type` matches stock’s `bufferTubeType`                                                          |
-| Magazine              | CompleteLowerReceiver | Included in `includedParts`, `caliber` in `caliberCompatibility`                                                                                     |
-| TakedownPin           | CompleteLowerReceiver | Included in `includedParts`, `diameter` === `takedownPinDiameter`                                                                                    |
-| SafetySelector        | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType`                                                                                        |
-| BoltCatch             | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType`                                                                                        |
-| MagazineRelease       | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType` AND `magazineFit` matches magazine’s `receiverFit`                                     |
-| FireControlGroup      | CompleteLowerReceiver | Included in `includedParts`, `pinDiameter` === `triggerPinDiameter`                                                                                  |
-| ReceiverEndPlate      | CompleteLowerReceiver | Included in `includedParts`, `bufferTubeFit` matches included buffer tube’s `type`                                                                   |
-| CastleNut             | CompleteLowerReceiver | Included in `includedParts`, `bufferTubeFit` matches included buffer tube’s `type`                                                                   |
-| Detent                | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType`                                                                                        |
-| Spring                | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType`                                                                                        |
-| LowerPartsKit         | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType`                                                                                        |
+| Model A               | Model B          | Compatibility Check                                                                                   |
+|-----------------------|------------------|-------------------------------------------------------------------------------------------------------|
+| CamPin                | BoltCarrierGroup | Included in `includedParts` as `AR15CamPinGroup`, `carrierFit` matches                                |
+| CamPin                | Bolt             | Included `AR15CamPinGroup` in `includedParts`, `carrierFit` matches                                   |
+| CompleteUpperReceiver | CamPin           | Included `AR15CamPinGroup` in `includedParts` (via `AR15BoltCarrierGroupGroup`), `carrierFit` matches |
+| BoltCarrierGroup      | CamPin           | Included in `includedParts` as `AR15CamPinGroup`, `carrierFit` matches                                |
+| Bolt                  | CamPin           | Included in `includedParts` as `AR15BoltGroup`, `carrierFit` matches                                  |
+
+### Example JSON
+```json
+{
+  "model": "AR15CamPin",
+  "upc": "123456789022",
+  "groupId": "507f1f77bcf86cd799439011",
+  "carrierFit": "Mil-Spec Carrier",
+  "material": "Steel",
+  "weight": 0.1,
+  "finish": "Chromed",
+  "color": ["Silver"],
+  "brandExample": "Bravo Company",
+  "durability": "High wear resistance",
+  "notes": "Essential for Mil-Spec BCG operation",
+  "categoryTags": ["UpperReceiver", "BoltCarrier", "ReceiverParts"],
+  "includedParts": ["AR15CamPinGroup"],
+  "vendor": []
+}
+```
+
+---
+
+### AR15Bolt
+### Compatibility Matrix
+| Model A               | Model B          | Compatibility Check                                                                              |
+|-----------------------|------------------|--------------------------------------------------------------------------------------------------|
+| Bolt                  | BoltCarrierGroup | Included in `includedParts` as `AR15BoltGroup`, `carrierFit` matches                             |
+| BoltCarrierGroup      | Bolt             | Included `AR15BoltGroup` in `includedParts`, `carrierFit` matches                                |
+| CompleteUpperReceiver | Bolt             | Included `AR15BoltGroup` in `includedParts` (via `AR15BoltCarrierGroupGroup`), `caliber` matches |
+
+### Example JSON
+```json
+{
+  "model": "AR15Bolt",
+  "upc": "123456789020",
+  "groupId": "507f1f77bcf86cd799439011",
+  "material": "Carpenter 158 Steel",
+  "carrierFit": "Mil-Spec Carrier",
+  "caliber": "5.56mm",
+  "weight": 1.5,
+  "finish": "Phosphate",
+  "color": ["Black"],
+  "brandExample": "FailZero",
+  "durability": "High wear resistance",
+  "notes": "Fits Mil-Spec bolt carrier groups, tested for reliability",
+  "categoryTags": ["UpperReceiver", "BoltCarrier", "ReceiverParts"],
+  "includedParts": ["AR15BoltGroup"],
+  "vendor": []
+}
+```
+
+---
+
+### AR15BoltHardware
+### Compatibility Matrix
+| Model A               | Model B          | Compatibility Check                                                                                         |
+|-----------------------|------------------|-------------------------------------------------------------------------------------------------------------|
+| BoltHardware          | BoltCarrierGroup | Included in `includedParts` as `AR15BoltHardwareGroup`, `carrierFit` matches                                |
+| BoltCarrierGroup      | BoltHardware     | Included `AR15BoltHardwareGroup` in `includedParts`, `carrierFit` matches                                   |
+| CompleteUpperReceiver | BoltHardware     | Included `AR15BoltHardwareGroup` in `includedParts` (via `AR15BoltCarrierGroupGroup`), `carrierFit` matches |
+
+### Example JSON
+```json
+{
+  "model": "AR15BoltHardware",
+  "upc": "123456789021",
+  "groupId": "507f1f77bcf86cd799439011",
+  "carrierFit": "Mil-Spec Carrier",
+  "components": ["Firing Pin", "Extractor", "Ejector"],
+  "material": "Steel",
+  "weight": 0.3,
+  "finish": "Phosphate",
+  "color": ["Black"],
+  "brandExample": "Spikes Tactical",
+  "durability": "High-tension components",
+  "notes": "Includes firing pin, extractor, and ejector for Mil-Spec BCGs",
+  "categoryTags": ["UpperReceiver", "BoltCarrier", "ReceiverParts"],
+  "includedParts": ["AR15BoltHardwareGroup"],
+  "vendor": []
+}
+```
+
+---
+
+### AR15EjectionPortHardware
+### Compatibility Matrix
+| Model A               | Model B               | Compatibility Check                                                                           |
+|-----------------------|-----------------------|-----------------------------------------------------------------------------------------------|
+| EjectionPortHardware  | CompleteUpperReceiver | Included in `includedParts` as `AR15EjectionPortHardwareGroup`, `receiverType` === `coverFit` |
+| CompleteUpperReceiver | EjectionPortHardware  | Included `AR15EjectionPortHardwareGroup` in `includedParts`, `receiverType` === `coverFit`    |
+
+### Example JSON
+```json
+{
+  "model": "AR15EjectionPortHardware",
+  "upc": "123456789017",
+  "groupId": "507f1f77bcf86cd799439011",
+  "coverFit": "Mil-Spec Cover",
+  "material": "Steel",
+  "weight": 0.2,
+  "finish": "Phosphate",
+  "color": ["Black"],
+  "components": ["Spring", "Pin"],
+  "brandExample": "Anderson Manufacturing",
+  "durability": "High-tension, corrosion-resistant",
+  "notes": "Includes spring and pin for Mil-Spec ejection port covers",
+  "categoryTags": ["UpperReceiver", "ReceiverParts"],
+  "includedParts": ["AR15EjectionPortHardwareGroup"],
+  "vendor": []
+}
+```
+
+---
+
+### AR15CompleteLowerReceiver
+### Compatibility Matrix
+| Model A               | Model B               | Compatibility Check                                                                                                              |
+|-----------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| CompleteLowerReceiver | CompleteUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group)       |
+| CompleteLowerReceiver | StrippedUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group)       |
+| CompleteLowerReceiver | Magazine              | Included `AR15MagazineGroup` in `includedParts`, `caliberCompatibility` includes `caliber`                                       |
+| CompleteLowerReceiver | BufferKit             | Included `AR15BufferKitGroup` in `includedParts`, included buffer tube’s `type` matches stock’s `bufferTubeType`                 |
+| CompleteLowerReceiver | Stock                 | Included `AR15StockGroup` in `includedParts`, `receiverType` compatible with included buffer tube’s `type`                       |
+| CompleteLowerReceiver | TriggerGuard          | Included `AR15TriggerGuardGroup` in `includedParts`, `receiverType` === `receiverFit` AND `triggerPinDiameter` === `pinDiameter` |
+| CompleteLowerReceiver | LowerPartsKit         | Included `AR15LowerPartsKitGroup` in `includedParts`, `receiverType` === `receiverFit`                                           |
+| CompleteUpperReceiver | CompleteLowerReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group)       |
+| StrippedUpperReceiver | CompleteLowerReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group)       |
+| Magazine              | CompleteLowerReceiver | Included in `includedParts`, `caliber` in `caliberCompatibility`                                                                 |
+| BufferKit             | CompleteLowerReceiver | Included in `includedParts`, included buffer tube’s `type` matches stock’s `bufferTubeType`                                      |
+| Stock                 | CompleteLowerReceiver | Included in `includedParts`, `bufferTubeType` matches included buffer tube’s `type`                                              |
+| TriggerGuard          | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType` AND `pinDiameter` === `triggerPinDiameter`                         |
+| LowerPartsKit         | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType`                                                                    |
 
 ### Example JSON
 ```json
 {
   "model": "AR15CompleteLowerReceiver",
   "upc": "123456789014",
+  "groupId": "507f191e810c19729de860ea",
   "receiverType": "Mil-Spec",
   "takedownPinDiameter": 0.25,
   "triggerPinDiameter": 0.154,
@@ -621,49 +661,30 @@ This document provides compatibility matrices and example specifications for AR-
   "durability": "High-strength, impact-resistant",
   "notes": "Fully assembled with Mil-Spec trigger, stock, and buffer system",
   "categoryTags": ["LowerReceiver", "Receiver"],
-  "includedParts": ["AR15TriggerGroup", "AR15TriggerGuardGroup", "AR15GripGroup", "AR15StockGroup", "AR15BufferKitGroup", "AR15TakedownPinGroup", "AR15SafetySelectorGroup", "AR15BoltCatchGroup", "AR15MagazineReleaseGroup", "AR15FireControlGroupGroup", "AR15ReceiverEndPlateGroup", "AR15CastleNutGroup", "AR15DetentGroup", "AR15SpringGroup", "AR15LowerPartsKitGroup"],
+  "includedParts": ["AR15TriggerGroup", "AR15TriggerGuardGroup", "AR15GripGroup", "AR15StockGroup", "AR15BufferKitGroup", "AR15TakedownPinGroup", "AR15SafetySelectorGroup", "AR15BoltCatchGroup", "AR15MagazineReleaseGroup", "AR15FireControlGroupGroup", "AR15ReceiverEndPlateGroup", "AR15CastleNutGroup", "AR15DetentGroup", "AR15SpringGroup"],
   "vendor": []
 }
 ```
-## AR15StrippedLowerReceiver
+
+---
+
+### AR15StrippedLowerReceiver
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                                        |
 |-----------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------|
-| StrippedLowerReceiver | CompleteLowerReceiver | `receiverType` === `receiverType` (via `includedParts`)                                                                    |
-| StrippedLowerReceiver | Trigger               | `triggerPinDiameter` === `pinDiameter`                                                                                     |
-| StrippedLowerReceiver | TriggerGuard          | `receiverType` === `receiverFit` AND `triggerPinDiameter` === `pinDiameter`                                                |
-| StrippedLowerReceiver | Grip                  | `receiverType` === `receiverFit`                                                                                           |
-| StrippedLowerReceiver | Stock                 | `receiverType` compatible with buffer tube’s `type` (via buffer kit)                                                       |
-| StrippedLowerReceiver | BufferKit             | Buffer tube’s `type` matches stock’s `bufferTubeType` (via stock compatibility)                                            |
-| StrippedLowerReceiver | Magazine              | `caliberCompatibility` includes `caliber`                                                                                  |
-| StrippedLowerReceiver | TakedownPin           | `takedownPinDiameter` === `diameter`                                                                                       |
-| StrippedLowerReceiver | SafetySelector        | `receiverType` === `receiverFit`                                                                                           |
-| StrippedLowerReceiver | BoltCatch             | `receiverType` === `receiverFit`                                                                                           |
-| StrippedLowerReceiver | MagazineRelease       | `receiverType` === `receiverFit` AND `magazineFit` matches magazine’s `receiverFit`                                        |
-| StrippedLowerReceiver | FireControlGroup      | `triggerPinDiameter` === `pinDiameter`                                                                                     |
-| StrippedLowerReceiver | ReceiverEndPlate      | Buffer tube’s `type` === `bufferTubeFit` (via buffer kit)                                                                  |
-| StrippedLowerReceiver | CastleNut             | Buffer tube’s `type` === `bufferTubeFit` (via buffer kit)                                                                  |
-| StrippedLowerReceiver | Detent                | `receiverType` === `receiverFit`                                                                                           |
-| StrippedLowerReceiver | Spring                | `receiverType` === `receiverFit`                                                                                           |
-| StrippedLowerReceiver | LowerPartsKit         | `receiverType` === `receiverFit`                                                                                           |
 | StrippedLowerReceiver | CompleteUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group) |
 | StrippedLowerReceiver | StrippedUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group) |
-| CompleteLowerReceiver | StrippedLowerReceiver | `receiverType` === `receiverType` (via `includedParts` reference to `AR15StrippedLowerReceiverGroup`)                      |
-| Trigger               | StrippedLowerReceiver | `pinDiameter` === `triggerPinDiameter`                                                                                     |
-| TriggerGuard          | StrippedLowerReceiver | `receiverFit` === `receiverType` AND `pinDiameter` === `triggerPinDiameter`                                                |
-| Grip                  | StrippedLowerReceiver | `receiverFit` === `receiverType`                                                                                           |
-| Stock                 | StrippedLowerReceiver | `bufferTubeType` matches buffer tube’s `type` (via buffer kit)                                                             |
-| BufferKit             | StrippedLowerReceiver | Included buffer tube’s `type` matches stock’s `bufferTubeType`                                                             |
+| StrippedLowerReceiver | Magazine              | `caliberCompatibility` includes `caliber`                                                                                  |
+| StrippedLowerReceiver | BufferKit             | Buffer tube’s `type` matches stock’s `bufferTubeType` (via stock compatibility)                                            |
+| StrippedLowerReceiver | Stock                 | `receiverType` compatible with buffer tube’s `type` (via buffer kit)                                                       |
+| StrippedLowerReceiver | TriggerGuard          | `receiverType` === `receiverFit` AND `triggerPinDiameter` === `pinDiameter`                                                |
+| StrippedLowerReceiver | LowerPartsKit         | `receiverType` === `receiverFit`                                                                                           |
+| CompleteUpperReceiver | StrippedLowerReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group) |
+| StrippedUpperReceiver | StrippedLowerReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group) |
 | Magazine              | StrippedLowerReceiver | `caliber` in `caliberCompatibility`                                                                                        |
-| TakedownPin           | StrippedLowerReceiver | `diameter` === `takedownPinDiameter`                                                                                       |
-| SafetySelector        | StrippedLowerReceiver | `receiverFit` === `receiverType`                                                                                           |
-| BoltCatch             | StrippedLowerReceiver | `receiverFit` === `receiverType`                                                                                           |
-| MagazineRelease       | StrippedLowerReceiver | `receiverFit` === `receiverType` AND `magazineFit` matches magazine’s `receiverFit`                                        |
-| FireControlGroup      | StrippedLowerReceiver | `pinDiameter` === `triggerPinDiameter`                                                                                     |
-| ReceiverEndPlate      | StrippedLowerReceiver | `bufferTubeFit` matches buffer tube’s `type` (via buffer kit)                                                              |
-| CastleNut             | StrippedLowerReceiver | `bufferTubeFit` matches buffer tube’s `type` (via buffer kit)                                                              |
-| Detent                | StrippedLowerReceiver | `receiverFit` === `receiverType`                                                                                           |
-| Spring                | StrippedLowerReceiver | `receiverFit` === `receiverType`                                                                                           |
+| BufferKit             | StrippedLowerReceiver | Included buffer tube’s `type` matches stock’s `bufferTubeType`                                                             |
+| Stock                 | StrippedLowerReceiver | `bufferTubeType` matches buffer tube’s `type` (via buffer kit)                                                             |
+| TriggerGuard          | StrippedLowerReceiver | `receiverFit` === `receiverType` AND `pinDiameter` === `triggerPinDiameter`                                                |
 | LowerPartsKit         | StrippedLowerReceiver | `receiverFit` === `receiverType`                                                                                           |
 
 ### Example JSON
@@ -671,6 +692,7 @@ This document provides compatibility matrices and example specifications for AR-
 {
   "model": "AR15StrippedLowerReceiver",
   "upc": "123456789030",
+  "groupId": "507f191e810c19729de860ea",
   "receiverType": "Mil-Spec",
   "takedownPinDiameter": 0.25,
   "triggerPinDiameter": 0.154,
@@ -684,26 +706,28 @@ This document provides compatibility matrices and example specifications for AR-
   "durability": "High-strength, impact-resistant",
   "notes": "Requires assembly with trigger, grip, and other components",
   "categoryTags": ["LowerReceiver", "Receiver"],
-  "includedParts": ["AR15StrippedLowerReceiverGroup"],
+  "includedParts": [],
   "vendor": []
 }
 ```
 
-## AR15LowerPartsKit
+---
+
+### AR15LowerPartsKit
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                    |
 |-----------------------|-----------------------|----------------------------------------------------------------------------------------|
 | LowerPartsKit         | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType`                          |
 | LowerPartsKit         | StrippedLowerReceiver | `receiverFit` === `receiverType`                                                       |
-| LowerPartsKit         | TakedownPin           | Included `AR15TakedownPinGroup`, `receiverFit` matches                                 |
-| LowerPartsKit         | SafetySelector        | Included `AR15SafetySelectorGroup`, `receiverFit` matches                              |
-| LowerPartsKit         | BoltCatch             | Included `AR15BoltCatchGroup`, `receiverFit` matches                                   |
-| LowerPartsKit         | MagazineRelease       | Included `AR15MagazineReleaseGroup`, `receiverFit` matches                             |
-| LowerPartsKit         | Detent                | Included `AR15DetentGroup`, `receiverFit` matches                                      |
-| LowerPartsKit         | Spring                | Included `AR15SpringGroup`, `receiverFit` matches                                      |
+| LowerPartsKit         | Trigger               | Included `AR15TriggerGroup` in `includedParts`, `receiverFit` matches                  |
+| LowerPartsKit         | SafetySelector        | Included `AR15SafetySelectorGroup` in `includedParts`, `receiverFit` matches           |
+| LowerPartsKit         | BoltCatch             | Included `AR15BoltCatchGroup` in `includedParts`, `receiverFit` matches                |
+| LowerPartsKit         | MagazineRelease       | Included `AR15MagazineReleaseGroup` in `includedParts`, `receiverFit` matches          |
+| LowerPartsKit         | Detent                | Included `AR15DetentGroup` in `includedParts`, `receiverFit` matches                   |
+| LowerPartsKit         | Spring                | Included `AR15SpringGroup` in `includedParts`, `receiverFit` matches                   |
 | CompleteLowerReceiver | LowerPartsKit         | Included `AR15LowerPartsKitGroup` in `includedParts`, `receiverType` === `receiverFit` |
 | StrippedLowerReceiver | LowerPartsKit         | `receiverType` === `receiverFit`                                                       |
-| TakedownPin           | LowerPartsKit         | Included in `includedParts`, `receiverFit` matches                                     |
+| Trigger               | LowerPartsKit         | Included in `includedParts`, `receiverFit` matches                                     |
 | SafetySelector        | LowerPartsKit         | Included in `includedParts`, `receiverFit` matches                                     |
 | BoltCatch             | LowerPartsKit         | Included in `includedParts`, `receiverFit` matches                                     |
 | MagazineRelease       | LowerPartsKit         | Included in `includedParts`, `receiverFit` matches                                     |
@@ -715,6 +739,7 @@ This document provides compatibility matrices and example specifications for AR-
 {
   "model": "AR15LowerPartsKit",
   "upc": "123456789031",
+  "groupId": "507f191e810c19729de860ea",
   "receiverFit": "Mil-Spec",
   "triggerPinDiameter": 0.154,
   "material": "Steel/Polymer",
@@ -731,36 +756,50 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15Grip
+---
+
+### AR15Grip
 ### Compatibility Matrix
-| Model A               | Model B               | Compatibility Check                                                           |
-|-----------------------|-----------------------|-------------------------------------------------------------------------------|
-| Grip                  | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType`                 |
-| Grip                  | StrippedLowerReceiver | `receiverFit` === `receiverType`                                              |
-| CompleteLowerReceiver | Grip                  | Included `AR15GripGroup` in `includedParts`, `receiverType` === `receiverFit` |
-| StrippedLowerReceiver | Grip                  | `receiverType` === `receiverFit`                                              |
+| Model A               | Model B               | Compatibility Check                                                                          |
+|-----------------------|-----------------------|----------------------------------------------------------------------------------------------|
+| Grip                  | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType`                                |
+| Grip                  | StrippedLowerReceiver | `receiverFit` === `receiverType`                                                             |
+| Grip                  | TriggerGuard          | `receiverFit` === `receiverFit` AND `triggerGuardType` compatible (e.g., Standard)           |
+| Grip                  | SafetySelector        | `receiverFit` === `receiverFit` AND `selectorType` compatible (e.g., Standard, Ambidextrous) |
+| Grip                  | GripScrew             | `screwType` matches if specified (e.g., Hex Head)                                            |
+| CompleteLowerReceiver | Grip                  | Included `AR15GripGroup` in `includedParts`, `receiverType` === `receiverFit`                |
+| StrippedLowerReceiver | Grip                  | `receiverType` === `receiverFit`                                                             |
+| TriggerGuard          | Grip                  | `receiverFit` === `receiverFit` AND `triggerGuardType` compatible                            |
+| SafetySelector        | Grip                  | `receiverFit` === `receiverFit` AND `selectorType` compatible                                |
 
 ### Example JSON
 ```json
 {
   "model": "AR15Grip",
   "upc": "123456789032",
+  "groupId": "507f191e810c19729de860ea",
   "receiverFit": "Mil-Spec",
   "material": "Polymer",
   "weight": 2.8,
   "finish": "Textured",
   "color": ["Black", "FDE"],
   "length": 4.0,
+  "texture": "Stippled",
+  "features": ["Finger Grooves", "Beavertail Support"],
+  "hasStorageCompartment": false,
+  "angle": "17 degrees",
   "brandExample": "Magpul MOE",
   "durability": "Impact-resistant, ergonomic",
   "notes": "Fits Mil-Spec lowers, includes mounting screw",
-  "categoryTags": ["LowerReceiver", "ReceiverParts"],
+  "categoryTags": ["LowerReceiver", "Grip"],
   "includedParts": ["AR15GripGroup"],
   "vendor": []
 }
 ```
 
-## AR15Trigger
+---
+
+### AR15Trigger
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                    |
 |-----------------------|-----------------------|----------------------------------------------------------------------------------------|
@@ -778,14 +817,15 @@ This document provides compatibility matrices and example specifications for AR-
 {
   "model": "AR15Trigger",
   "upc": "123456789033",
+  "groupId": "507f191e810c19729de860ea",
   "pinDiameter": 0.154,
   "receiverFit": "Mil-Spec",
   "triggerType": "Single-Stage",
+  "pullWeight": 5.5,
   "material": "Steel",
   "weight": 2.5,
   "finish": "Phosphate",
   "color": ["Black"],
-  "pullWeight": 5.5,
   "brandExample": "ALG Defense",
   "durability": "Precision-machined, reliable",
   "notes": "Crisp break, fits Mil-Spec lowers",
@@ -795,22 +835,27 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15TriggerGuard
+---
+
+### AR15TriggerGuard
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                                              |
 |-----------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | TriggerGuard          | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType` AND `pinDiameter` === `triggerPinDiameter`                         |
 | TriggerGuard          | StrippedLowerReceiver | `receiverFit` === `receiverType` AND `pinDiameter` === `triggerPinDiameter`                                                      |
 | TriggerGuard          | Trigger               | `pinDiameter` === `pinDiameter`                                                                                                  |
+| TriggerGuard          | Grip                  | `receiverFit` === `receiverFit` AND `triggerGuardType` compatible                                                                |
 | CompleteLowerReceiver | TriggerGuard          | Included `AR15TriggerGuardGroup` in `includedParts`, `receiverType` === `receiverFit` AND `triggerPinDiameter` === `pinDiameter` |
 | StrippedLowerReceiver | TriggerGuard          | `receiverType` === `receiverFit` AND `triggerPinDiameter` === `pinDiameter`                                                      |
 | Trigger               | TriggerGuard          | `pinDiameter` === `pinDiameter`                                                                                                  |
+| Grip                  | TriggerGuard          | `receiverFit` === `receiverFit` AND `triggerGuardType` compatible                                                                |
 
 ### Example JSON
 ```json
 {
   "model": "AR15TriggerGuard",
   "upc": "123456789034",
+  "groupId": "507f191e810c19729de860ea",
   "receiverFit": "Mil-Spec",
   "pinDiameter": 0.154,
   "material": "Aluminum",
@@ -826,13 +871,16 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15Stock
+---
+
+### AR15Stock
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                        |
 |-----------------------|-----------------------|------------------------------------------------------------------------------------------------------------|
 | Stock                 | CompleteLowerReceiver | Included in `includedParts`, `bufferTubeType` matches included buffer tube’s `type`                        |
 | Stock                 | StrippedLowerReceiver | `bufferTubeType` matches buffer tube’s `type` (via buffer kit)                                             |
 | Stock                 | BufferKit             | `bufferTubeType` === included buffer tube’s `type`                                                         |
+| Stock                 | BufferTube            | `bufferTubeType` === `type`                                                                                |
 | Stock                 | ReceiverEndPlate      | `bufferTubeType` === `bufferTubeFit` (via buffer kit)                                                      |
 | Stock                 | CastleNut             | `bufferTubeType` === `bufferTubeFit` (via buffer kit)                                                      |
 | CompleteLowerReceiver | Stock                 | Included `AR15StockGroup` in `includedParts`, `receiverType` compatible with included buffer tube’s `type` |
@@ -847,6 +895,7 @@ This document provides compatibility matrices and example specifications for AR-
 {
   "model": "AR15Stock",
   "upc": "123456789035",
+  "groupId": "507f191e810c19729de860ea",
   "bufferTubeType": "Mil-Spec",
   "material": "Polymer",
   "weight": 7.0,
@@ -862,7 +911,9 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15BufferKit
+---
+
+### AR15BufferKit
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                              |
 |-----------------------|-----------------------|------------------------------------------------------------------------------------------------------------------|
@@ -888,6 +939,7 @@ This document provides compatibility matrices and example specifications for AR-
 {
   "model": "AR15BufferKit",
   "upc": "123456789036",
+  "groupId": "507f191e810c19729de860ea",
   "bufferTubeType": "Mil-Spec",
   "bufferWeight": 3.0,
   "material": "Steel/Aluminum",
@@ -904,19 +956,25 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15Buffer
+---
+
+### AR15Buffer
 ### Compatibility Matrix
-| Model A               | Model B   | Compatibility Check                                                                            |
-|-----------------------|-----------|------------------------------------------------------------------------------------------------|
-| Buffer                | BufferKit | Included in `includedParts`, `bufferType` matches                                              |
-| BufferKit             | Buffer    | Included `AR15BufferGroup`, `bufferType` matches                                               |
-| CompleteLowerReceiver | Buffer    | Included `AR15BufferGroup` in `includedParts` (via `AR15BufferKitGroup`), `bufferType` matches |
+| Model A      | Model B      | Compatibility Check                               |
+|--------------|--------------|---------------------------------------------------|
+| Buffer       | BufferKit    | Included in `includedParts`, `bufferType` matches |
+| Buffer       | BufferTube   | `bufferType` matches `bufferTubeFit`              |
+| Buffer       | BufferSpring | `bufferType` matches `bufferSpringFit`            |
+| BufferKit    | Buffer       | Included `AR15BufferGroup`, `bufferType` matches  |
+| BufferTube   | Buffer       | `bufferTubeFit` matches `bufferType`              |
+| BufferSpring | Buffer       | `bufferSpringFit` matches `bufferType`            |
 
 ### Example JSON
 ```json
 {
   "model": "AR15Buffer",
   "upc": "123456789037",
+  "groupId": "507f191e810c19729de860ea",
   "weight": 3.0,
   "bufferType": "Carbine",
   "material": "Steel",
@@ -932,7 +990,9 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15BufferTube
+---
+
+### AR15BufferTube
 ### Compatibility Matrix
 | Model A               | Model B          | Compatibility Check                                                                          |
 |-----------------------|------------------|----------------------------------------------------------------------------------------------|
@@ -951,6 +1011,7 @@ This document provides compatibility matrices and example specifications for AR-
 {
   "model": "AR15BufferTube",
   "upc": "123456789038",
+  "groupId": "507f191e810c19729de860ea",
   "type": "Mil-Spec",
   "length": "Carbine",
   "material": "6061-T6 Aluminum",
@@ -967,19 +1028,25 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15BufferSpring
+---
+
+### AR15BufferSpring
 ### Compatibility Matrix
-| Model A               | Model B      | Compatibility Check                                                                                     |
-|-----------------------|--------------|---------------------------------------------------------------------------------------------------------|
-| BufferSpring          | BufferKit    | Included in `includedParts`, `bufferTubeFit` matches                                                    |
-| BufferKit             | BufferSpring | Included `AR15BufferSpringGroup`, `bufferTubeFit` matches                                               |
-| CompleteLowerReceiver | BufferSpring | Included `AR15BufferSpringGroup` in `includedParts` (via `AR15BufferKitGroup`), `bufferTubeFit` matches |
+| Model A      | Model B      | Compatibility Check                                       |
+|--------------|--------------|-----------------------------------------------------------|
+| BufferSpring | BufferKit    | Included in `includedParts`, `bufferTubeFit` matches      |
+| BufferSpring | BufferTube   | `bufferTubeFit` matches `type`                            |
+| BufferSpring | Buffer       | `bufferTubeFit` matches `bufferType`                      |
+| BufferKit    | BufferSpring | Included `AR15BufferSpringGroup`, `bufferTubeFit` matches |
+| BufferTube   | BufferSpring | `type` matches `bufferTubeFit`                            |
+| Buffer       | BufferSpring | `bufferType` matches `bufferTubeFit`                      |
 
 ### Example JSON
 ```json
 {
   "model": "AR15BufferSpring",
   "upc": "123456789039",
+  "groupId": "507f191e810c19729de860ea",
   "bufferTubeFit": "Carbine",
   "material": "Stainless Steel",
   "weight": 1.5,
@@ -995,7 +1062,9 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15Magazine
+---
+
+### AR15Magazine
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                        |
 |-----------------------|-----------------------|--------------------------------------------------------------------------------------------|
@@ -1013,6 +1082,7 @@ This document provides compatibility matrices and example specifications for AR-
 {
   "model": "AR15Magazine",
   "upc": "123456789015",
+  "groupId": "507f191e810c19729de860ea",
   "caliber": "5.56mm",
   "capacity": 30,
   "receiverFit": "Mil-Spec",
@@ -1030,7 +1100,9 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15TakedownPin
+---
+
+### AR15TakedownPin
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                      |
 |-----------------------|-----------------------|------------------------------------------------------------------------------------------|
@@ -1046,6 +1118,7 @@ This document provides compatibility matrices and example specifications for AR-
 {
   "model": "AR15TakedownPin",
   "upc": "123456789040",
+  "groupId": "507f191e810c19729de860ea",
   "diameter": 0.25,
   "receiverFit": "Mil-Spec",
   "material": "Steel",
@@ -1062,7 +1135,9 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15SafetySelector
+---
+
+### AR15SafetySelector
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                     |
 |-----------------------|-----------------------|-----------------------------------------------------------------------------------------|
@@ -1078,6 +1153,7 @@ This document provides compatibility matrices and example specifications for AR-
 {
   "model": "AR15SafetySelector",
   "upc": "123456789041",
+  "groupId": "507f191e810c19729de860ea",
   "receiverFit": "Mil-Spec",
   "material": "Steel",
   "weight": 0.3,
@@ -1093,7 +1169,9 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15BoltCatch
+---
+
+### AR15BoltCatch
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                |
 |-----------------------|-----------------------|------------------------------------------------------------------------------------|
@@ -1109,6 +1187,7 @@ This document provides compatibility matrices and example specifications for AR-
 {
   "model": "AR15BoltCatch",
   "upc": "123456789042",
+  "groupId": "507f191e810c19729de860ea",
   "receiverFit": "Mil-Spec",
   "material": "Steel",
   "weight": 0.4,
@@ -1123,7 +1202,9 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15MagazineRelease
+---
+
+### AR15MagazineRelease
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                                                                  |
 |-----------------------|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1141,6 +1222,7 @@ This document provides compatibility matrices and example specifications for AR-
 {
   "model": "AR15MagazineRelease",
   "upc": "123456789043",
+  "groupId": "507f191e810c19729de860ea",
   "receiverFit": "Mil-Spec",
   "magazineFit": "Mil-Spec Magazine",
   "material": "Steel",
@@ -1156,7 +1238,9 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15FireControlGroup
+---
+
+### AR15FireControlGroup
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                             |
 |-----------------------|-----------------------|-------------------------------------------------------------------------------------------------|
@@ -1164,14 +1248,15 @@ This document provides compatibility matrices and example specifications for AR-
 | FireControlGroup      | StrippedLowerReceiver | `pinDiameter` === `triggerPinDiameter`                                                          |
 | FireControlGroup      | Trigger               | Included `AR15TriggerGroup`, `pinDiameter` matches                                              |
 | CompleteLowerReceiver | FireControlGroup      | Included `AR15FireControlGroupGroup` in `includedParts`, `triggerPinDiameter` === `pinDiameter` |
-| StrippedLowerReceiver | FireControlGroup      | `trigger系统由 `pinDiameter` === `triggerPinDiameter`                                            |
-| Trigger               | FireControlGroup      | Included `AR15TriggerGroup`, `pinDiameter` matches                                 |
+| StrippedLowerReceiver | FireControlGroup      | `triggerPinDiameter` === `pinDiameter`                                                          |
+| Trigger               | FireControlGroup      | Included `AR15TriggerGroup`, `pinDiameter` matches                                              |
 
 ### Example JSON
 ```json
 {
   "model": "AR15FireControlGroup",
   "upc": "123456789044",
+  "groupId": "507f191e810c19729de860ea",
   "pinDiameter": 0.154,
   "receiverFit": "Mil-Spec",
   "material": "Steel",
@@ -1188,7 +1273,9 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15ReceiverEndPlate
+---
+
+### AR15ReceiverEndPlate
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                        |
 |-----------------------|-----------------------|------------------------------------------------------------------------------------------------------------|
@@ -1208,6 +1295,7 @@ This document provides compatibility matrices and example specifications for AR-
 {
   "model": "AR15ReceiverEndPlate",
   "upc": "123456789044",
+  "groupId": "507f191e810c19729de860ea",
   "bufferTubeFit": "Mil-Spec",
   "material": "Steel",
   "weight": 0.5,
@@ -1223,8 +1311,10 @@ This document provides compatibility matrices and example specifications for AR-
 }
 ```
 
-## AR15CastleNut
-### Compatibility Matrix
+---
+
+### AR15CastleNut
+#### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                 |
 |-----------------------|-----------------------|-----------------------------------------------------------------------------------------------------|
 | CastleNut             | CompleteLowerReceiver | Included in `includedParts`, `bufferTubeFit` matches included buffer tube’s `type`                  |
@@ -1232,94 +1322,113 @@ This document provides compatibility matrices and example specifications for AR-
 | CastleNut             | BufferKit             | `bufferTubeFit` === included buffer tube’s `type`                                                   |
 | CastleNut             | Stock                 | `bufferTubeFit` === `bufferTubeType` (via buffer kit)                                               |
 | CastleNut             | BufferTube            | `bufferTubeFit` === `type`                                                                          |
+| CastleNut             | ReceiverEndPlate      | `bufferTubeFit` === `bufferTubeFit`                                                                 |
 | CompleteLowerReceiver | CastleNut             | Included `AR15CastleNutGroup` in `includedParts`, included buffer tube’s `type` === `bufferTubeFit` |
 | StrippedLowerReceiver | CastleNut             | `bufferTubeFit` matches buffer tube’s `type` (via buffer kit)                                       |
 | BufferKit             | CastleNut             | Included buffer tube’s `type` === `bufferTubeFit`                                                   |
 | Stock                 | CastleNut             | `bufferTubeType` === `bufferTubeFit` (via buffer kit)                                               |
 | BufferTube            | CastleNut             | `type` === `bufferTubeFit`                                                                          |
+| ReceiverEndPlate      | CastleNut             | `bufferTubeFit` === `bufferTubeFit`                                                                 |
 
-### Example JSON
+#### Example JSON
 ```json
 {
   "model": "AR15CastleNut",
   "upc": "123456789045",
+  "groupId": "507f191e810c19729de860ea",
   "bufferTubeFit": "Mil-Spec",
   "material": "Steel",
-  "weight": 0.8,
+  "weight": 0.6,
   "finish": "Phosphate",
   "color": ["Black"],
   "diameter": 1.5,
-  "brandExample": "Bravo Company",
-  "durability": "High-torque, corrosion-resistant",
-  "notes": "Secures Mil-Spec buffer tubes to lower receivers",
+  "brandExample": "BCM",
+  "durability": "High-strength, secure",
+  "notes": "Locks Mil-Spec buffer tubes to receiver end plate",
   "categoryTags": ["LowerReceiver", "BufferAssembly"],
   "includedParts": ["AR15CastleNutGroup"],
   "vendor": []
 }
 ```
 
-## AR15Detent
-### Compatibility Matrix
-| Model A               | Model B               | Compatibility Check                                                             |
-|-----------------------|-----------------------|---------------------------------------------------------------------------------|
-| Detent                | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType`                   |
-| Detent                | StrippedLowerReceiver | `receiverFit` === `receiverType`                                                |
-| Detent                | LowerPartsKit         | Included in `includedParts`, `receiverFit` matches                              |
-| Detent                | FireControlGroup      | Included in `includedParts` as `AR15DetentGroup`, `receiverFit` matches         |
-| CompleteLowerReceiver | Detent                | Included `AR15DetentGroup` in `includedParts`, `receiverType` === `receiverFit` |
-| StrippedLowerReceiver | Detent                | `receiverType` === `receiverFit`                                                |
-| LowerPartsKit         | Detent                | Included `AR15DetentGroup`, `receiverFit` matches                               |
-| FireControlGroup      | Detent                | Included `AR15DetentGroup`, `receiverFit` matches                               |
+---
 
-### Example JSON
+### AR15Detent
+#### Compatibility Matrix
+| Model A               | Model B               | Compatibility Check                                                                     |
+|-----------------------|-----------------------|-----------------------------------------------------------------------------------------|
+| Detent                | CompleteLowerReceiver | Included in `includedParts`, `detentType` compatible with lower specs                   |
+| Detent                | StrippedLowerReceiver | `detentType` compatible with lower specs                                                |
+| Detent                | TakedownPin           | `detentType` === `pinDetentType`                                                        |
+| Detent                | SafetySelector        | `detentType` === `selectorDetentType`                                                   |
+| Detent                | LowerPartsKit         | Included in `includedParts`, `detentType` matches                                       |
+| Detent                | Spring                | `detentType` === `springFitType`                                                        |
+| CompleteLowerReceiver | Detent                | Included `AR15DetentGroup` in `includedParts`, `detentType` compatible with lower specs |
+| StrippedLowerReceiver | Detent                | `detentType` compatible with lower specs                                                |
+| TakedownPin           | Detent                | `pinDetentType` === `detentType`                                                        |
+| SafetySelector        | Detent                | `selectorDetentType` === `detentType`                                                   |
+| LowerPartsKit         | Detent                | Included `AR15DetentGroup`, `detentType` matches                                        |
+| Spring                | Detent                | `springFitType` === `detentType`                                                        |
+
+#### Example JSON
 ```json
 {
   "model": "AR15Detent",
   "upc": "123456789046",
-  "receiverFit": "Mil-Spec",
+  "groupId": "507f191e810c19729de860ea",
+  "detentType": "Standard",
   "material": "Steel",
   "weight": 0.1,
-  "finish": "Phosphate",
-  "color": ["Black"],
-  "length": 0.3,
-  "brandExample": "KNS Precision",
-  "durability": "High-tension, reliable retention",
+  "finish": "None",
+  "color": ["Silver"],
+  "brandExample": "DPMS",
+  "durability": "Standard, reliable",
   "notes": "Used for takedown pins and safety selectors in Mil-Spec lowers",
-  "categoryTags": ["LowerReceiver", "ReceiverParts"],
+  "categoryTags": ["LowerReceiver", "Detent"],
   "includedParts": ["AR15DetentGroup"],
   "vendor": []
 }
 ```
 
-## AR15Spring
-### Compatibility Matrix
-| Model A               | Model B               | Compatibility Check                                                             |
-|-----------------------|-----------------------|---------------------------------------------------------------------------------|
-| Spring                | CompleteLowerReceiver | Included in `includedParts`, `receiverFit` === `receiverType`                   |
-| Spring                | StrippedLowerReceiver | `receiverFit` === `receiverType`                                                |
-| Spring                | LowerPartsKit         | Included in `includedParts`, `receiverFit` matches                              |
-| Spring                | FireControlGroup      | Included in `includedParts` as `AR15SpringGroup`, `receiverFit` matches         |
-| CompleteLowerReceiver | Spring                | Included `AR15SpringGroup` in `includedParts`, `receiverType` === `receiverFit` |
-| StrippedLowerReceiver | Spring                | `receiverType` === `receiverFit`                                                |
-| LowerPartsKit         | Spring                | Included `AR15SpringGroup`, `receiverFit` matches                               |
-| FireControlGroup      | Spring                | Included `AR15SpringGroup`, `receiverFit` matches                               |
+---
 
-### Example JSON
+### AR15Spring
+#### Compatibility Matrix
+| Model A               | Model B               | Compatibility Check                                                                     |
+|-----------------------|-----------------------|-----------------------------------------------------------------------------------------|
+| Spring                | CompleteLowerReceiver | Included in `includedParts`, `springType` compatible with lower specs                   |
+| Spring                | StrippedLowerReceiver | `springType` compatible with lower specs                                                |
+| Spring                | Detent                | `springType` === `detentSpringType`                                                     |
+| Spring                | TakedownPin           | `springType` === `pinSpringType`                                                        |
+| Spring                | SafetySelector        | `springType` === `selectorSpringType`                                                   |
+| Spring                | MagazineRelease       | `springType` === `releaseSpringType`                                                    |
+| Spring                | LowerPartsKit         | Included in `includedParts`, `springType` matches                                       |
+| CompleteLowerReceiver | Spring                | Included `AR15SpringGroup` in `includedParts`, `springType` compatible with lower specs |
+| StrippedLowerReceiver | Spring                | `springType` compatible with lower specs                                                |
+| Detent                | Spring                | `detentSpringType` === `springType`                                                     |
+| TakedownPin           | Spring                | `pinSpringType` === `springType`                                                        |
+| SafetySelector        | Spring                | `selectorSpringType` === `springType`                                                   |
+| MagazineRelease       | Spring                | `releaseSpringType` === `springType`                                                    |
+| LowerPartsKit         | Spring                | Included `AR15SpringGroup`, `springType` matches                                        |
+
+#### Example JSON
 ```json
 {
   "model": "AR15Spring",
   "upc": "123456789047",
-  "receiverFit": "Mil-Spec",
+  "groupId": "507f191e810c19729de860ea",
+  "springType": "Standard",
   "material": "Stainless Steel",
-  "weight": 0.2,
-  "finish": "Polished",
+  "weight": 0.1,
+  "finish": "None",
   "color": ["Silver"],
-  "length": 1.0,
   "brandExample": "Sprinco",
-  "durability": "High-tension, corrosion-resistant",
-  "notes": "Used for detents and small components in Mil-Spec lowers",
-  "categoryTags": ["LowerReceiver", "ReceiverParts"],
+  "durability": "High-tension, reliable",
+  "notes": "Used for detents, takedown pins, and magazine releases in Mil-Spec lowers",
+  "categoryTags": ["LowerReceiver", "Spring"],
   "includedParts": ["AR15SpringGroup"],
   "vendor": []
 }
 ```
+
+---
