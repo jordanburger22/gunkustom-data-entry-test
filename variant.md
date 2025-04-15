@@ -1,6 +1,6 @@
 # AR-15 Gun Parts Compatibility Matrix
 
-This document outlines compatibility matrices and example specifications for AR-15 gun parts, designed to support an app for compatibility checking and price comparison via affiliate links, without holding inventory. It covers 37 variant models, split into upper receiver (17) and lower receiver (20) groups. Each model includes:
+This document outlines compatibility matrices and example specifications for AR-15 gun parts, designed to support an app for compatibility checking and price comparison via affiliate links, without holding inventory. It covers 38 variant models, split into upper receiver (18) and lower receiver (20) groups. Each model includes:
 
 - **Compatibility Matrix**: Lists all interactions (as Model A and Model B) with direct comparison checks (e.g., `pinDiameter === triggerPinDiameter`).
 - **Example JSON Object**: Includes validated compatibility fields (e.g., diameters, calibers), customer-relevant specs (e.g., material, weight, finish), and a `groupId` referencing the corresponding group model/schema (e.g., `AR15UpperReceiverGroup` or `AR15LowerReceiverGroup`). All fields are optional to prevent errors.
@@ -15,11 +15,13 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 |-----------------------|-----------------------|---------------------------------------------------------------------------------------------------|
 | Handguard             | CompleteUpperReceiver | `requiredUpperReceiverType` === `receiverType`                                                    |
 | Handguard             | StrippedUpperReceiver | `requiredUpperReceiverType` === `receiverType`                                                    |
+| Handguard             | UpperReceiverAssembly | `requiredUpperReceiverType` === `receiverType`                                                    |
 | Handguard             | BarrelNut             | `requiredBarrelNutType` === `type` AND (`requiredBarrelNutThread` === `thread` OR both undefined) |
 | Handguard             | Barrel                | `innerDiameter` >= `outerDiameterAtGasPort` AND `barrelDiameterMax` >= `outerDiameterAtGasPort`   |
 | Handguard             | GasSystem             | `gasSystemCompatibility` includes `gasLength`                                                     |
 | CompleteUpperReceiver | Handguard             | `receiverType` === `requiredUpperReceiverType`                                                    |
 | StrippedUpperReceiver | Handguard             | `receiverType` === `requiredUpperReceiverType`                                                    |
+| UpperReceiverAssembly | Handguard             | `receiverType` === `requiredUpperReceiverType`                                                    |
 | BarrelNut             | Handguard             | `type` === `requiredBarrelNutType` AND (`thread` === `requiredBarrelNutThread` OR both undefined) |
 | Barrel                | Handguard             | `outerDiameterAtGasPort` <= `innerDiameter` AND `outerDiameterAtGasPort` <= `barrelDiameterMax`   |
 | GasSystem             | Handguard             | `gasLength` in `gasSystemCompatibility`                                                           |
@@ -62,6 +64,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 |-----------------------|-----------------------|---------------------------------------------------------------------------------------------------------|
 | CompleteUpperReceiver | Handguard             | `receiverType` === `requiredUpperReceiverType`                                                          |
 | CompleteUpperReceiver | StrippedUpperReceiver | `receiverType` === `receiverType` (via `includedParts`)                                                 |
+| CompleteUpperReceiver | UpperReceiverAssembly | `receiverType` === `receiverType` AND `caliber` === `caliber`                                           |
 | CompleteUpperReceiver | BarrelNut             | `barrelNutThread` === `thread` OR both undefined                                                        |
 | CompleteUpperReceiver | Barrel                | Included `AR15BarrelGroup` in `includedParts`, `receiverType` === `receiverFit`                         |
 | CompleteUpperReceiver | BoltCarrierGroup      | Included `AR15BoltCarrierGroupGroup` in `includedParts`, `receiverType` === `receiverFit`               |
@@ -70,6 +73,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 | CompleteUpperReceiver | MuzzleDevice          | Included `AR15MuzzleDeviceGroup` in `includedParts`, matches barrel’s `threading` and `caliber`         |
 | Handguard             | CompleteUpperReceiver | `requiredUpperReceiverType` === `receiverType`                                                          |
 | StrippedUpperReceiver | CompleteUpperReceiver | `receiverType` === `receiverType` (via `includedParts`)                                                 |
+| UpperReceiverAssembly | CompleteUpperReceiver | `receiverType` === `receiverType` AND `caliber` === `caliber`                                           |
 | BarrelNut             | CompleteUpperReceiver | `thread` === `barrelNutThread` OR both undefined                                                        |
 | Barrel                | CompleteUpperReceiver | Included in `includedParts` as `AR15BarrelGroup`, `receiverFit` === `receiverType`                      |
 | BoltCarrierGroup      | CompleteUpperReceiver | Included in `includedParts` as `AR15BoltCarrierGroupGroup`, `receiverFit` === `receiverType`            |
@@ -85,6 +89,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
   "upc": "123456789012",
   "groupId": "507f1f77bcf86cd799439011",
   "receiverType": "Mil-Spec",
+  "takedownPinDiameter": 0.25,
   "barrelNutThread": "1-7/16-16",
   "railType": "Picatinny",
   "material": "7075-T6 Aluminum",
@@ -109,19 +114,21 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 | Model A               | Model B               | Compatibility Check                                                                                 |
 |-----------------------|-----------------------|-----------------------------------------------------------------------------------------------------|
 | StrippedUpperReceiver | Handguard             | `receiverType` === `requiredUpperReceiverType`                                                      |
+| StrippedUpperReceiver | UpperReceiverAssembly | `receiverType` === `receiverType`                                                                   |
 | StrippedUpperReceiver | Barrel                | `receiverType` === `receiverFit`                                                                    |
 | StrippedUpperReceiver | BoltCarrierGroup      | `receiverType` === `receiverFit`                                                                    |
 | StrippedUpperReceiver | ChargingHandle        | `receiverType` === `receiverFit`                                                                    |
 | StrippedUpperReceiver | ForwardAssist         | `receiverType` === `forwardAssistFit`                                                               |
 | StrippedUpperReceiver | EjectionPortCover     | `receiverType` === `ejectionPortFit`                                                                |
-| StrippedUpperReceiver | CompleteLowerReceiver | `receiverType` === `receiverFit` AND barrel/bolt `caliber` in `caliberCompatibility` (via assembly) |
+| StrippedUpperReceiver | CompleteLowerReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND barrel/bolt `caliber` in `caliberCompatibility` |
 | Handguard             | StrippedUpperReceiver | `requiredUpperReceiverType` === `receiverType`                                                      |
+| UpperReceiverAssembly | StrippedUpperReceiver | `receiverType` === `receiverType`                                                                   |
 | Barrel                | StrippedUpperReceiver | `receiverFit` === `receiverType`                                                                    |
 | BoltCarrierGroup      | StrippedUpperReceiver | `receiverFit` === `receiverType`                                                                    |
 | ChargingHandle        | StrippedUpperReceiver | `receiverFit` === `receiverType`                                                                    |
 | ForwardAssist         | StrippedUpperReceiver | `forwardAssistFit` === `receiverType`                                                               |
 | EjectionPortCover     | StrippedUpperReceiver | `ejectionPortFit` === `receiverType`                                                                |
-| CompleteLowerReceiver | StrippedUpperReceiver | `receiverFit` === `receiverType` AND barrel/bolt `caliber` in `caliberCompatibility` (via assembly) |
+| CompleteLowerReceiver | StrippedUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND barrel/bolt `caliber` in `caliberCompatibility` |
 
 ### Example JSON
 ```json
@@ -130,6 +137,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
   "upc": "123456789087",
   "groupId": "507f1f77bcf86cd799439011",
   "receiverType": "Mil-Spec",
+  "takedownPinDiameter": 0.25,
   "material": "7075-T6 Aluminum",
   "weight": 6.9,
   "finish": "Hardcoat Anodized",
@@ -145,18 +153,67 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
+## AR15UpperReceiverAssembly
+### Compatibility Matrix
+| Model A               | Model B               | Compatibility Check                                                                                     |
+|-----------------------|-----------------------|---------------------------------------------------------------------------------------------------------|
+| UpperReceiverAssembly | CompleteLowerReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes assembly’s `caliber` |
+| UpperReceiverAssembly | StrippedLowerReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes assembly’s `caliber` |
+| UpperReceiverAssembly | BoltCarrierGroup      | `receiverFit` === assembly’s `receiverType` AND `caliber` === assembly’s `caliber` *AND* `caliber` === assembly’s `caliber`                        |
+| UpperReceiverAssembly | ChargingHandle        | `receiverFit` === assembly’s `receiverType`                                                              |
+| UpperReceiverAssembly | Handguard             | `receiverType` === `requiredUpperReceiverType`                                                          |
+| UpperReceiverAssembly | CompleteUpperReceiver | `receiverType` === `receiverType` AND `caliber` === `caliber`                                           |
+| UpperReceiverAssembly | StrippedUpperReceiver | `receiverType` === `receiverType`                                                                       |
+| CompleteLowerReceiver | UpperReceiverAssembly | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes assembly’s `caliber` |
+| StrippedLowerReceiver | UpperReceiverAssembly | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes assembly’s `caliber` |
+| BoltCarrierGroup      | UpperReceiverAssembly | `receiverFit` === assembly’s `receiverType` AND `caliber` === assembly’s `caliber`                       |
+| ChargingHandle        | UpperReceiverAssembly | `receiverFit` === assembly’s `receiverType`                                                              |
+| Handguard             | UpperReceiverAssembly | `requiredUpperReceiverType` === `receiverType`                                                          |
+| CompleteUpperReceiver | UpperReceiverAssembly | `receiverType` === `receiverType` AND `caliber` === `caliber`                                           |
+| StrippedUpperReceiver | UpperReceiverAssembly | `receiverType` === `receiverType`                                                                       |
+
+### Example JSON
+```json
+{
+  "model": "AR15UpperReceiverAssembly",
+  "upc": "123456789013",
+  "groupId": "507f1f77bcf86cd799439011",
+  "receiverType": "Mil-Spec",
+  "takedownPinDiameter": 0.25,
+  "caliber": "5.56mm",
+  "barrelLength": 16.0,
+  "handguardType": "M-LOK",
+  "material": "7075-T6 Aluminum",
+  "weight": 32.0,
+  "finish": "Hardcoat Anodized",
+  "color": ["Black"],
+  "brandExample": "Aero Precision",
+  "durability": "High-strength, corrosion-resistant",
+  "notes": "Includes upper receiver, barrel, handguard, gas system, and muzzle device; requires BCG and charging handle",
+  "categoryTags": ["UpperReceiver", "ReceiverAssembly"],
+  "includedParts": ["AR15UpperReceiverGroup", "AR15BarrelGroup", "AR15HandguardGroup", "AR15GasSystemGroup", "AR15MuzzleDeviceGroup"],
+  "vendor": []
+}
+```
+
+---
+
 ## AR15Barrel
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                             |
 |-----------------------|-----------------------|-------------------------------------------------------------------------------------------------|
 | Barrel                | Handguard             | `outerDiameterAtGasPort` <= `innerDiameter` AND `outerDiameterAtGasPort` <= `barrelDiameterMax` |
 | Barrel                | CompleteUpperReceiver | Included in `includedParts` as `AR15BarrelGroup`, `receiverFit` === `receiverType`              |
+| Barrel                | UpperReceiverAssembly | Included in `includedParts` as `AR15BarrelGroup`, `receiverFit` === `receiverType`              |
+| Barrel                | StrippedUpperReceiver | `receiverFit` === `receiverType`                                                                |
 | Barrel                | GasSystem             | `gasPortLocation` === `gasLength` AND `caliber` === `caliberCompatibility`                      |
 | Barrel                | BoltCarrierGroup      | `caliber` === included bolt’s `caliber`                                                         |
 | Barrel                | MuzzleDevice          | `threading` === `threading` AND `caliber` === `caliberCompatibility`                            |
 | Barrel                | Bolt                  | `caliber` === `caliber` AND `barrelType` === `boltType`                                         |
 | Handguard             | Barrel                | `innerDiameter` >= `outerDiameterAtGasPort` AND `barrelDiameterMax` >= `outerDiameterAtGasPort` |
 | CompleteUpperReceiver | Barrel                | Included `AR15BarrelGroup` in `includedParts`, `receiverType` === `receiverFit`                 |
+| UpperReceiverAssembly | Barrel                | Included `AR15BarrelGroup` in `includedParts`, `receiverType` === `receiverFit`                 |
+| StrippedUpperReceiver | Barrel                | `receiverType` === `receiverFit`                                                                |
 | GasSystem             | Barrel                | `gasLength` === `gasPortLocation` AND `caliberCompatibility` === `caliber`                      |
 | BoltCarrierGroup      | Barrel                | Included bolt’s `caliber` === `caliber`                                                         |
 | MuzzleDevice          | Barrel                | `threading` === `threading` AND `caliber` === `caliberCompatibility`                            |
@@ -199,11 +256,13 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 | Model A               | Model B               | Compatibility Check                                                                                                     |
 |-----------------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------|
 | BoltCarrierGroup      | CompleteUpperReceiver | Included in `includedParts`, `receiverFit` matches `receiverType` AND `caliber` matches included barrel’s `caliber`     |
+| BoltCarrierGroup      | UpperReceiverAssembly | `receiverFit` === assembly’s `receiverType` AND `caliber` === assembly’s `caliber`                                       |
 | BoltCarrierGroup      | StrippedUpperReceiver | `receiverFit` matches `receiverType` AND `caliber` matches included barrel’s `caliber` (via assembly)                   |
 | BoltCarrierGroup      | Barrel                | `caliber` matches `caliber` AND `boltType` matches `barrelType`                                                         |
 | BoltCarrierGroup      | Bolt                  | Included `AR15BoltGroup`, `boltType` matches BCG’s `boltType`                                                           |
 | BoltCarrierGroup      | ChargingHandle        | `receiverFit` matches `receiverFit` (both must fit the same upper receiver)                                             |
 | CompleteUpperReceiver | BoltCarrierGroup      | Included `AR15BoltCarrierGroup`, `receiverType` matches `receiverFit` AND `caliber` matches included barrel’s `caliber` |
+| UpperReceiverAssembly | BoltCarrierGroup      | `receiverFit` === assembly’s `receiverType` AND `caliber` === assembly’s `caliber`                                       |
 | StrippedUpperReceiver | BoltCarrierGroup      | `receiverType` matches `receiverFit` AND `caliber` matches included barrel’s `caliber` (via assembly)                   |
 | Barrel                | BoltCarrierGroup      | `caliber` matches `caliber` AND `barrelType` matches `boltType`                                                         |
 | Bolt                  | BoltCarrierGroup      | Included in `includedParts`, `boltType` matches BCG’s `boltType`                                                        |
@@ -238,9 +297,11 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 | Model A               | Model B               | Compatibility Check                                                         |
 |-----------------------|-----------------------|-----------------------------------------------------------------------------|
 | ChargingHandle        | CompleteUpperReceiver | Included in `includedParts`, `receiverFit` matches `receiverType`           |
+| ChargingHandle        | UpperReceiverAssembly | `receiverFit` === assembly’s `receiverType`                                 |
 | ChargingHandle        | StrippedUpperReceiver | `receiverFit` matches `receiverType`                                        |
 | ChargingHandle        | BoltCarrierGroup      | `receiverFit` matches `receiverFit` (both must fit the same upper receiver) |
 | CompleteUpperReceiver | ChargingHandle        | Included `AR15ChargingHandleGroup`, `receiverType` matches `receiverFit`    |
+| UpperReceiverAssembly | ChargingHandle        | `receiverFit` === assembly’s `receiverType`                                 |
 | StrippedUpperReceiver | ChargingHandle        | `receiverType` matches `receiverFit`                                        |
 | BoltCarrierGroup      | ChargingHandle        | `receiverFit` matches `receiverFit` (both must fit the same upper receiver) |
 
@@ -308,8 +369,10 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 |-----------------------|-----------------------|----------------------------------------------------------------------------------------------------------|
 | MuzzleDevice          | Barrel                | `threading` === `threading` AND `caliber` === `caliberCompatibility`                                     |
 | MuzzleDevice          | CompleteUpperReceiver | Included `AR15MuzzleDeviceGroup` in `includedParts`, matches included barrel’s `threading` and `caliber` |
+| MuzzleDevice          | UpperReceiverAssembly | Included `AR15MuzzleDeviceGroup` in `includedParts`, matches included barrel’s `threading` and `caliber` |
 | Barrel                | MuzzleDevice          | `threading` === `threading` AND `caliber` === `caliberCompatibility`                                     |
 | CompleteUpperReceiver | MuzzleDevice          | Included `AR15MuzzleDeviceGroup` in `includedParts`, matches included barrel’s `threading` and `caliber` |
+| UpperReceiverAssembly | MuzzleDevice          | Included `AR15MuzzleDeviceGroup` in `includedParts`, matches included barrel’s `threading` and `caliber` |
 
 ### Example JSON
 ```json
@@ -318,6 +381,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
   "upc": "123456789048",
   "groupId": "507f1f77bcf86cd799439011",
   "threading": "1/2-28",
+  "caliber": "5.56mm",
   "caliberCompatibility": "5.56mm",
   "type": "Flash Hider",
   "material": "Steel",
@@ -327,7 +391,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
   "length": 2.0,
   "brandExample": "SureFire",
   "durability": "High heat resistance",
-  "notes": "Reduces muzzle flash, Mil-Spec threading",
+  "notes": "Reduces muzzle flash, Mil-Spec threading, designed for 5.56mm barrels",
   "categoryTags": ["Barrel", "BarrelAssembly"],
   "includedParts": ["AR15MuzzleDeviceGroup"],
   "vendor": []
@@ -341,8 +405,10 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 | Model A               | Model B               | Compatibility Check                                                                           |
 |-----------------------|-----------------------|-----------------------------------------------------------------------------------------------|
 | EjectionPortCover     | CompleteUpperReceiver | Included in `includedParts` as `AR15EjectionPortCoverGroup`, `receiverType` === `receiverFit` |
+| EjectionPortCover     | UpperReceiverAssembly | Included in `includedParts` as `AR15EjectionPortCoverGroup`, `receiverType` === `receiverFit` |
 | EjectionPortCover     | StrippedUpperReceiver | `receiverFit` === `ejectionPortFit`                                                           |
 | CompleteUpperReceiver | EjectionPortCover     | Included `AR15EjectionPortCoverGroup` in `includedParts`, `receiverType` === `receiverFit`    |
+| UpperReceiverAssembly | EjectionPortCover     | Included `AR15EjectionPortCoverGroup` in `includedParts`, `receiverType` === `receiverFit`    |
 | StrippedUpperReceiver | EjectionPortCover     | `ejectionPortFit` === `receiverFit`                                                           |
 
 ### Example JSON
@@ -373,8 +439,10 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 | Model A               | Model B               | Compatibility Check                                                                       |
 |-----------------------|-----------------------|-------------------------------------------------------------------------------------------|
 | ForwardAssist         | CompleteUpperReceiver | Included in `includedParts` as `AR15ForwardAssistGroup`, `receiverType` === `receiverFit` |
+| ForwardAssist         | UpperReceiverAssembly | Included in `includedParts` as `AR15ForwardAssistGroup`, `receiverType` === `receiverFit` |
 | ForwardAssist         | StrippedUpperReceiver | `receiverFit` === `forwardAssistFit`                                                      |
 | CompleteUpperReceiver | ForwardAssist         | Included `AR15ForwardAssistGroup` in `includedParts`, `receiverType` === `receiverFit`    |
+| UpperReceiverAssembly | ForwardAssist         | Included `AR15ForwardAssistGroup` in `includedParts`, `receiverType` === `receiverFit`    |
 | StrippedUpperReceiver | ForwardAssist         | `forwardAssistFit` === `receiverFit`                                                      |
 
 ### Example JSON
@@ -407,6 +475,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 | GasBlock              | GasSystem | Included in `includedParts` as `AR15GasBlockGroup`, `gasSystemFit` matches                                                    |
 | GasSystem             | GasBlock  | Included `AR15GasBlockGroup` in `includedParts`, `gasSystemFit` matches, `innerDiameter` >= barrel’s `outerDiameterAtGasPort` |
 | CompleteUpperReceiver | GasBlock  | Included `AR15GasBlockGroup` in `includedParts` (via `AR15GasSystemGroup`), `gasSystemFit` matches                            |
+| UpperReceiverAssembly | GasBlock  | Included `AR15GasBlockGroup` in `includedParts` (via `AR15GasSystemGroup`), `gasSystemFit` matches                            |
 
 ### Example JSON
 ```json
@@ -432,13 +501,14 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15GasTube
-#### Compatibility Matrix
+## AR15GasTube
+### Compatibility Matrix
 | Model A               | Model B   | Compatibility Check                                                                                 |
 |-----------------------|-----------|-----------------------------------------------------------------------------------------------------|
 | GasTube               | GasSystem | Included in `includedParts` as `AR15GasTubeGroup`, `gasSystemFit` === `gasSystemFit`                |
 | GasSystem             | GasTube   | Included `AR15GasTubeGroup` in `includedParts`, `gasSystemFit` === `gasSystemFit`, `length` matches |
 | CompleteUpperReceiver | GasTube   | Included `AR15GasTubeGroup` in `includedParts` (via `AR15GasSystemGroup`), `gasSystemFit` matches   |
+| UpperReceiverAssembly | GasTube   | Included `AR15GasTubeGroup` in `includedParts` (via `AR15GasSystemGroup`), `gasSystemFit` matches   |
 
 ### Example JSON
 ```json
@@ -463,15 +533,17 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15BarrelNut
-#### Compatibility Matrix
+## AR15BarrelNut
+### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                               |
 |-----------------------|-----------------------|---------------------------------------------------------------------------------------------------|
 | BarrelNut             | Handguard             | `type` === `requiredBarrelNutType` AND (`thread` === `requiredBarrelNutThread` OR both undefined) |
 | BarrelNut             | CompleteUpperReceiver | `thread` === `barrelNutThread` AND `receiverFit` === `receiverType` OR both undefined             |
+| BarrelNut             | UpperReceiverAssembly | `thread` === `barrelNutThread` AND `receiverFit` === `receiverType` OR both undefined             |
 | BarrelNut             | StrippedUpperReceiver | `thread` === `barrelNutThread` AND `receiverFit` === `receiverType` OR both undefined             |
 | Handguard             | BarrelNut             | `requiredBarrelNutType` === `type` AND (`requiredBarrelNutThread` === `thread` OR both undefined) |
 | CompleteUpperReceiver | BarrelNut             | `barrelNutThread` === `thread` OR both undefined                                                  |
+| UpperReceiverAssembly | BarrelNut             | `barrelNutThread` === `thread` OR both undefined                                                  |
 | StrippedUpperReceiver | BarrelNut             | `barrelNutThread` === `thread` OR both undefined                                                  |
 
 ### Example JSON
@@ -499,13 +571,14 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15CamPin
+## AR15CamPin
 ### Compatibility Matrix
 | Model A               | Model B          | Compatibility Check                                                                                   |
 |-----------------------|------------------|-------------------------------------------------------------------------------------------------------|
 | CamPin                | BoltCarrierGroup | Included in `includedParts` as `AR15CamPinGroup`, `carrierFit` matches                                |
 | CamPin                | Bolt             | Included `AR15CamPinGroup` in `includedParts`, `carrierFit` matches                                   |
 | CompleteUpperReceiver | CamPin           | Included `AR15CamPinGroup` in `includedParts` (via `AR15BoltCarrierGroupGroup`), `carrierFit` matches |
+| UpperReceiverAssembly | CamPin           | Included `AR15CamPinGroup` in `includedParts` (via `AR15BoltCarrierGroupGroup`), `carrierFit` matches |
 | BoltCarrierGroup      | CamPin           | Included in `includedParts` as `AR15CamPinGroup`, `carrierFit` matches                                |
 | Bolt                  | CamPin           | Included in `includedParts` as `AR15BoltGroup`, `carrierFit` matches                                  |
 
@@ -531,13 +604,16 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15Bolt
+## AR15Bolt
 ### Compatibility Matrix
 | Model A               | Model B          | Compatibility Check                                                                              |
 |-----------------------|------------------|--------------------------------------------------------------------------------------------------|
 | Bolt                  | BoltCarrierGroup | Included in `includedParts` as `AR15BoltGroup`, `carrierFit` matches                             |
+| Bolt                  | Barrel           | `caliber` === `caliber` AND `boltType` === `barrelType`                                         |
 | BoltCarrierGroup      | Bolt             | Included `AR15BoltGroup` in `includedParts`, `carrierFit` matches                                |
+| Barrel                | Bolt             | `caliber` === `caliber` AND `boltType` === `barrelType`                                         |
 | CompleteUpperReceiver | Bolt             | Included `AR15BoltGroup` in `includedParts` (via `AR15BoltCarrierGroupGroup`), `caliber` matches |
+| UpperReceiverAssembly | Bolt             | Included `AR15BoltGroup` in `includedParts` (via `AR15BoltCarrierGroupGroup`), `caliber` matches |
 
 ### Example JSON
 ```json
@@ -562,13 +638,14 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15BoltHardware
+## AR15BoltHardware
 ### Compatibility Matrix
 | Model A               | Model B          | Compatibility Check                                                                                         |
 |-----------------------|------------------|-------------------------------------------------------------------------------------------------------------|
 | BoltHardware          | BoltCarrierGroup | Included in `includedParts` as `AR15BoltHardwareGroup`, `carrierFit` matches                                |
 | BoltCarrierGroup      | BoltHardware     | Included `AR15BoltHardwareGroup` in `includedParts`, `carrierFit` matches                                   |
 | CompleteUpperReceiver | BoltHardware     | Included `AR15BoltHardwareGroup` in `includedParts` (via `AR15BoltCarrierGroupGroup`), `carrierFit` matches |
+| UpperReceiverAssembly | BoltHardware     | Included `AR15BoltHardwareGroup` in `includedParts` (via `AR15BoltCarrierGroupGroup`), `carrierFit` matches |
 
 ### Example JSON
 ```json
@@ -593,12 +670,14 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15EjectionPortHardware
+## AR15EjectionPortHardware
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                           |
 |-----------------------|-----------------------|-----------------------------------------------------------------------------------------------|
 | EjectionPortHardware  | CompleteUpperReceiver | Included in `includedParts` as `AR15EjectionPortHardwareGroup`, `receiverType` === `coverFit` |
+| EjectionPortHardware  | UpperReceiverAssembly | Included in `includedParts` as `AR15EjectionPortHardwareGroup`, `receiverType` === `coverFit` |
 | CompleteUpperReceiver | EjectionPortHardware  | Included `AR15EjectionPortHardwareGroup` in `includedParts`, `receiverType` === `coverFit`    |
+| UpperReceiverAssembly | EjectionPortHardware  | Included `AR15EjectionPortHardwareGroup` in `includedParts`, `receiverType` === `coverFit`    |
 
 ### Example JSON
 ```json
@@ -623,11 +702,12 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15CompleteLowerReceiver
+## AR15CompleteLowerReceiver
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                                              |
 |-----------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | CompleteLowerReceiver | CompleteUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group)       |
+| CompleteLowerReceiver | UpperReceiverAssembly | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes assembly’s `caliber`                         |
 | CompleteLowerReceiver | StrippedUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group)       |
 | CompleteLowerReceiver | Magazine              | Included `AR15MagazineGroup` in `includedParts`, `caliberCompatibility` includes `caliber`                                       |
 | CompleteLowerReceiver | BufferKit             | Included `AR15BufferKitGroup` in `includedParts`, included buffer tube’s `type` matches stock’s `bufferTubeType`                 |
@@ -635,6 +715,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 | CompleteLowerReceiver | TriggerGuard          | Included `AR15TriggerGuardGroup` in `includedParts`, `receiverType` === `receiverFit` AND `triggerPinDiameter` === `pinDiameter` |
 | CompleteLowerReceiver | LowerPartsKit         | Included `AR15LowerPartsKitGroup` in `includedParts`, `receiverType` === `receiverFit`                                           |
 | CompleteUpperReceiver | CompleteLowerReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group)       |
+| UpperReceiverAssembly | CompleteLowerReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes assembly’s `caliber`                         |
 | StrippedUpperReceiver | CompleteLowerReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group)       |
 | Magazine              | CompleteLowerReceiver | Included in `includedParts`, `caliber` in `caliberCompatibility`                                                                 |
 | BufferKit             | CompleteLowerReceiver | Included in `includedParts`, included buffer tube’s `type` matches stock’s `bufferTubeType`                                      |
@@ -668,11 +749,12 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15StrippedLowerReceiver
+## AR15StrippedLowerReceiver
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                                        |
 |-----------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------|
 | StrippedLowerReceiver | CompleteUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group) |
+| StrippedLowerReceiver | UpperReceiverAssembly | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes assembly’s `caliber`                   |
 | StrippedLowerReceiver | StrippedUpperReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group) |
 | StrippedLowerReceiver | Magazine              | `caliberCompatibility` includes `caliber`                                                                                  |
 | StrippedLowerReceiver | BufferKit             | Buffer tube’s `type` matches stock’s `bufferTubeType` (via stock compatibility)                                            |
@@ -680,6 +762,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 | StrippedLowerReceiver | TriggerGuard          | `receiverType` === `receiverFit` AND `triggerPinDiameter` === `pinDiameter`                                                |
 | StrippedLowerReceiver | LowerPartsKit         | `receiverType` === `receiverFit`                                                                                           |
 | CompleteUpperReceiver | StrippedLowerReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group) |
+| UpperReceiverAssembly | StrippedLowerReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes assembly’s `caliber`                   |
 | StrippedUpperReceiver | StrippedLowerReceiver | `takedownPinDiameter` === `takedownPinDiameter` AND `caliberCompatibility` includes upper’s barrel `caliber` (inter-group) |
 | Magazine              | StrippedLowerReceiver | `caliber` in `caliberCompatibility`                                                                                        |
 | BufferKit             | StrippedLowerReceiver | Included buffer tube’s `type` matches stock’s `bufferTubeType`                                                             |
@@ -713,7 +796,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15LowerPartsKit
+## AR15LowerPartsKit
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                    |
 |-----------------------|-----------------------|----------------------------------------------------------------------------------------|
@@ -758,7 +841,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15Grip
+## AR15Grip
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                          |
 |-----------------------|-----------------------|----------------------------------------------------------------------------------------------|
@@ -799,7 +882,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15Trigger
+## AR15Trigger
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                    |
 |-----------------------|-----------------------|----------------------------------------------------------------------------------------|
@@ -837,7 +920,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15TriggerGuard
+## AR15TriggerGuard
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                                              |
 |-----------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------------|
@@ -873,7 +956,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15Stock
+## AR15Stock
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                        |
 |-----------------------|-----------------------|------------------------------------------------------------------------------------------------------------|
@@ -913,7 +996,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15BufferKit
+## AR15BufferKit
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                              |
 |-----------------------|-----------------------|------------------------------------------------------------------------------------------------------------------|
@@ -958,7 +1041,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15Buffer
+## AR15Buffer
 ### Compatibility Matrix
 | Model A      | Model B      | Compatibility Check                               |
 |--------------|--------------|---------------------------------------------------|
@@ -992,7 +1075,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15BufferTube
+## AR15BufferTube
 ### Compatibility Matrix
 | Model A               | Model B          | Compatibility Check                                                                          |
 |-----------------------|------------------|----------------------------------------------------------------------------------------------|
@@ -1030,7 +1113,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15BufferSpring
+## AR15BufferSpring
 ### Compatibility Matrix
 | Model A      | Model B      | Compatibility Check                                       |
 |--------------|--------------|-----------------------------------------------------------|
@@ -1064,7 +1147,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15Magazine
+## AR15Magazine
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                        |
 |-----------------------|-----------------------|--------------------------------------------------------------------------------------------|
@@ -1072,6 +1155,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 | Magazine              | StrippedLowerReceiver | `caliber` in `caliberCompatibility`                                                        |
 | Magazine              | MagazineRelease       | `receiverFit` === `magazineFit`                                                            |
 | Magazine              | CompleteUpperReceiver | `caliber` === included barrel’s `caliber` AND included bolt’s `caliber` (inter-group)      |
+| Magazine              | UpperReceiverAssembly | `caliber` === included barrel’s `caliber` AND included bolt’s `caliber` (inter-group)      |
 | Magazine              | StrippedUpperReceiver | `caliber` === included barrel’s `caliber` AND included bolt’s `caliber` (inter-group)      |
 | CompleteLowerReceiver | Magazine              | Included `AR15MagazineGroup` in `includedParts`, `caliberCompatibility` includes `caliber` |
 | StrippedLowerReceiver | Magazine              | `caliberCompatibility` includes `caliber`                                                  |
@@ -1102,7 +1186,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15TakedownPin
+## AR15TakedownPin
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                      |
 |-----------------------|-----------------------|------------------------------------------------------------------------------------------|
@@ -1137,7 +1221,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15SafetySelector
+## AR15SafetySelector
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                     |
 |-----------------------|-----------------------|-----------------------------------------------------------------------------------------|
@@ -1171,7 +1255,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15BoltCatch
+## AR15BoltCatch
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                |
 |-----------------------|-----------------------|------------------------------------------------------------------------------------|
@@ -1204,7 +1288,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15MagazineRelease
+## AR15MagazineRelease
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                                                                  |
 |-----------------------|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1240,7 +1324,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15FireControlGroup
+## AR15FireControlGroup
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                             |
 |-----------------------|-----------------------|-------------------------------------------------------------------------------------------------|
@@ -1275,7 +1359,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15ReceiverEndPlate
+## AR15ReceiverEndPlate
 ### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                        |
 |-----------------------|-----------------------|------------------------------------------------------------------------------------------------------------|
@@ -1313,8 +1397,8 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15CastleNut
-#### Compatibility Matrix
+## AR15CastleNut
+### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                                 |
 |-----------------------|-----------------------|-----------------------------------------------------------------------------------------------------|
 | CastleNut             | CompleteLowerReceiver | Included in `includedParts`, `bufferTubeFit` matches included buffer tube’s `type`                  |
@@ -1330,7 +1414,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 | BufferTube            | CastleNut             | `type` === `bufferTubeFit`                                                                          |
 | ReceiverEndPlate      | CastleNut             | `bufferTubeFit` === `bufferTubeFit`                                                                 |
 
-#### Example JSON
+### Example JSON
 ```json
 {
   "model": "AR15CastleNut",
@@ -1353,8 +1437,8 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15Detent
-#### Compatibility Matrix
+## AR15Detent
+### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                     |
 |-----------------------|-----------------------|-----------------------------------------------------------------------------------------|
 | Detent                | CompleteLowerReceiver | Included in `includedParts`, `detentType` compatible with lower specs                   |
@@ -1370,7 +1454,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 | LowerPartsKit         | Detent                | Included `AR15DetentGroup`, `detentType` matches                                        |
 | Spring                | Detent                | `springFitType` === `detentType`                                                        |
 
-#### Example JSON
+### Example JSON
 ```json
 {
   "model": "AR15Detent",
@@ -1392,8 +1476,8 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 
 ---
 
-### AR15Spring
-#### Compatibility Matrix
+## AR15Spring
+### Compatibility Matrix
 | Model A               | Model B               | Compatibility Check                                                                     |
 |-----------------------|-----------------------|-----------------------------------------------------------------------------------------|
 | Spring                | CompleteLowerReceiver | Included in `includedParts`, `springType` compatible with lower specs                   |
@@ -1411,7 +1495,7 @@ Composite parts use `includedParts` (e.g., `["AR15BarrelGroup"]`) to denote subp
 | MagazineRelease       | Spring                | `releaseSpringType` === `springType`                                                    |
 | LowerPartsKit         | Spring                | Included `AR15SpringGroup`, `springType` matches                                        |
 
-#### Example JSON
+### Example JSON
 ```json
 {
   "model": "AR15Spring",
